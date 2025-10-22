@@ -1,9 +1,16 @@
-from flask import Blueprint, request, jsonify, make_response
+from flask import Blueprint, request, jsonify, make_response, current_app
 from models import db, Event, User, Registration, RegistrationField, RegistrationFieldResponse
 from utils.auth import token_required
 from datetime import datetime
+from werkzeug.utils import secure_filename
+import os
+import uuid
 
 event_routes = Blueprint('event_routes', __name__)
+
+def allowed_file(filename):
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @event_routes.errorhandler(400)
 def bad_request(error):
@@ -38,16 +45,35 @@ def list_events():
 @event_routes.route('/', methods=['POST'])
 @token_required
 def create_event(current_user_id):
-    data = request.get_json()
-    title = data.get('title')
-    description = data.get('description')
-    poster_url = data.get('poster_url')
-    date = data.get('date')
-    deadline = data.get('deadline')
-    prizes = data.get('prizes')
-    eligibility = data.get('eligibility')
-    category = data.get('category')
-    fields = data.get('fields', [])
+    # Handle file upload
+    poster_url = None
+    if 'poster' in request.files:
+        file = request.files['poster']
+        if file and file.filename and allowed_file(file.filename):
+            # Generate unique filename
+            filename = secure_filename(file.filename)
+            unique_filename = f"{uuid.uuid4().hex}_{filename}"
+            file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)
+            file.save(file_path)
+            poster_url = f"{request.host_url}uploads/{unique_filename}"
+    
+    # Get form data
+    title = request.form.get('title')
+    description = request.form.get('description')
+    date = request.form.get('date')
+    deadline = request.form.get('deadline')
+    prizes = request.form.get('prizes')
+    eligibility = request.form.get('eligibility')
+    category = request.form.get('category')
+    
+    # Parse fields from JSON string
+    import json
+    fields = []
+    if request.form.get('fields'):
+        try:
+            fields = json.loads(request.form.get('fields'))
+        except:
+            fields = []
 
     # Validate required fields
     if not title or not description or not date or not deadline:

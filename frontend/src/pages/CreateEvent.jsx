@@ -4,7 +4,9 @@ import ToastNotification from '../components/ToastNotification';
 import { useNavigate } from 'react-router-dom';
 
 const CreateEvent = () => {
-  const [form, setForm] = useState({ title: '', description: '', poster_url: '', date: '', deadline: '', prizes: '', eligibility: '', category: '' });
+  const [form, setForm] = useState({ title: '', description: '', date: '', deadline: '', prizes: '', eligibility: '', category: '' });
+  const [posterFile, setPosterFile] = useState(null);
+  const [posterPreview, setPosterPreview] = useState('');
   const [fields, setFields] = useState([]);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('info');
@@ -13,6 +15,35 @@ const CreateEvent = () => {
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleFileChange = e => {
+    const file = e.target.files[0];
+    if (file) {
+      // Check file size (1MB = 1048576 bytes)
+      if (file.size > 1048576) {
+        setMessage('File size must be less than 1MB');
+        setMessageType('error');
+        return;
+      }
+      
+      // Check file type
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        setMessage('Only PNG, JPG, JPEG, and GIF files are allowed');
+        setMessageType('error');
+        return;
+      }
+      
+      setPosterFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPosterPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const addField = () => {
@@ -33,8 +64,29 @@ const CreateEvent = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
+    
     try {
-      await axiosInstance.post('/events', { ...form, fields });
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('title', form.title);
+      formData.append('description', form.description);
+      formData.append('date', form.date);
+      formData.append('deadline', form.deadline);
+      formData.append('prizes', form.prizes || '');
+      formData.append('eligibility', form.eligibility || '');
+      formData.append('category', form.category);
+      formData.append('fields', JSON.stringify(fields));
+      
+      if (posterFile) {
+        formData.append('poster', posterFile);
+      }
+      
+      await axiosInstance.post('/events', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
       setMessage('Event created successfully! 🎉');
       setMessageType('success');
       setTimeout(() => navigate('/my-events'), 2000);
@@ -76,6 +128,45 @@ const CreateEvent = () => {
         {/* Right Form Area */}
         <div className="create-event-form-wrapper">
           <form onSubmit={handleSubmit} className="create-event-form">
+            {/* Event Poster Upload */}
+            <div className="form-group">
+              <label htmlFor="poster" className="form-label">
+                Event Poster
+              </label>
+              <div className="file-upload-wrapper">
+                <input 
+                  id="poster"
+                  name="poster" 
+                  type="file"
+                  className="file-input"
+                  accept="image/png, image/jpeg, image/jpg, image/gif"
+                  onChange={handleFileChange}
+                />
+                <label htmlFor="poster" className="file-upload-label">
+                  {posterFile ? (
+                    <div className="file-upload-preview">
+                      <img src={posterPreview} alt="Poster preview" />
+                      <div className="file-upload-info">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>{posterFile.name}</span>
+                        <span className="file-size">({(posterFile.size / 1024).toFixed(1)} KB)</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="file-upload-placeholder">
+                      <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      <p className="upload-text">Click to upload or drag and drop</p>
+                      <p className="upload-hint">PNG, JPG, JPEG or GIF (max 1MB)</p>
+                    </div>
+                  )}
+                </label>
+              </div>
+            </div>
+
             {/* Event Title */}
             <div className="form-group">
               <label htmlFor="title" className="form-label">
@@ -92,21 +183,6 @@ const CreateEvent = () => {
                 required 
               />
               <p className="form-hint">Max 190 characters</p>
-            </div>
-
-            {/* Poster URL (Hidden styled input) */}
-            <div className="form-group">
-              <label htmlFor="poster_url" className="form-label">
-                Poster URL
-              </label>
-              <input 
-                id="poster_url"
-                name="poster_url" 
-                className="form-input"
-                placeholder="https://example.com/poster.jpg" 
-                value={form.poster_url} 
-                onChange={handleChange} 
-              />
             </div>
 
             {/* Category */}

@@ -87,3 +87,6 @@ htmlcov/
 
 # Migrations (if you add them later)
 migrations/
+
+# Uploads
+backend/uploads/

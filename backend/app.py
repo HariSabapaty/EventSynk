@@ -3,34 +3,42 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from config import Config
 from models import db
+import os
 
 # Initialize Flask app
 app = Flask(__name__)
 app.config.from_object(Config)
 
+# Configure upload folder
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1MB max file size
+
+# Create uploads directory if it doesn't exist
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
 # Disable automatic trailing slash redirects
 app.url_map.strict_slashes = False
 
-# Enable CORS with more permissive configuration for development
+# Enable CORS
 CORS(app, 
-     resources={r"/api/*": {"origins": "*"}},
+     resources={r"/*": {"origins": "*"}},
      allow_headers=["Content-Type", "Authorization"],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-     supports_credentials=True,
      expose_headers=["Content-Type", "Authorization"]
 )
 
 # Initialize extensions
 db.init_app(app)
 
-# Add CORS headers to all responses
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    response.headers.add('Access-Control-Allow-Credentials', 'true')
-    return response
+# Serve uploaded files
+from flask import send_from_directory
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # Register Blueprints
 from routes.auth_routes import auth_routes
