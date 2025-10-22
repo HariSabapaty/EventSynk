@@ -11,16 +11,26 @@ app.config.from_object(Config)
 # Disable automatic trailing slash redirects
 app.url_map.strict_slashes = False
 
-# Enable CORS with proper configuration
-CORS(app, resources={r"/api/*": {
-    "origins": "http://localhost:5173",
-    "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    "allow_headers": ["Content-Type", "Authorization"],
-    "supports_credentials": True
-}})
+# Enable CORS with more permissive configuration for development
+CORS(app, 
+     resources={r"/api/*": {"origins": "*"}},
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     supports_credentials=True,
+     expose_headers=["Content-Type", "Authorization"]
+)
 
 # Initialize extensions
 db.init_app(app)
+
+# Add CORS headers to all responses
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    return response
 
 # Register Blueprints
 from routes.auth_routes import auth_routes

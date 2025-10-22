@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import EventCard from '../components/EventCard';
 import HeroSection from '../components/HeroSection';
+import FeaturedEvents from '../components/FeaturedEvents';
 
 const Home = () => {
   const [events, setEvents] = useState([]);
@@ -24,11 +25,16 @@ const Home = () => {
     <div className="home-page">
       <HeroSection />
       
+      {/* Featured Events Section */}
+      {!loading && events.length > 0 && (
+        <FeaturedEvents events={events} />
+      )}
+      
       <div id="events-section" className="events-section">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">Upcoming Events</h2>
-            <p className="section-subtitle">Discover exciting events happening at SSN College</p>
+            <h2 className="section-title">All Events</h2>
+            <p className="section-subtitle">Browse through all events happening at SSN College</p>
           </div>
           
           {loading ? (
