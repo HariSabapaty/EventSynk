@@ -3,6 +3,8 @@ import axiosInstance from '../api/axiosInstance';
 import EventCard from '../components/EventCard';
 import HeroSection from '../components/HeroSection';
 import FeaturedEvents from '../components/FeaturedEvents';
+import PlatformFeatures from '../components/PlatformFeatures';
+import CallToAction from '../components/CallToAction';
 
 const Home = () => {
   const [events, setEvents] = useState([]);
@@ -24,6 +26,9 @@ const Home = () => {
   return (
     <div className="home-page">
       <HeroSection />
+      
+      {/* Platform Features Section */}
+      <PlatformFeatures />
       
       {/* Featured Events Section */}
       {!loading && events.length > 0 && (
@@ -52,6 +57,9 @@ const Home = () => {
           )}
         </div>
       </div>
+
+      {/* Call to Action Section */}
+      <CallToAction />
     </div>
   );
 };
