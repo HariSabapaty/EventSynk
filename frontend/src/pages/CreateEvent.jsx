@@ -46,161 +46,243 @@ const CreateEvent = () => {
   };
 
   return (
-    <div className="container">
-      <div className="page-header">
-        <h2>✨ Create Amazing Event</h2>
-        <p>Fill in the details to create your event</p>
-      </div>
-      <form onSubmit={handleSubmit} style={{ maxWidth: '700px' }}>
-        <div>
-          <label htmlFor="title">Event Title *</label>
-          <input 
-            id="title"
-            name="title" 
-            placeholder="Enter event title" 
-            value={form.title} 
-            onChange={handleChange} 
-            required 
-          />
-        </div>
-
-        <div>
-          <label htmlFor="description">Description *</label>
-          <textarea 
-            id="description"
-            name="description" 
-            placeholder="Describe your event in detail..." 
-            value={form.description} 
-            onChange={handleChange} 
-            required 
-          />
-        </div>
-
-        <div>
-          <label htmlFor="poster_url">Poster URL</label>
-          <input 
-            id="poster_url"
-            name="poster_url" 
-            placeholder="https://example.com/poster.jpg" 
-            value={form.poster_url} 
-            onChange={handleChange} 
-          />
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-          <div>
-            <label htmlFor="date">Event Date & Time *</label>
-            <input 
-              id="date"
-              name="date" 
-              type="datetime-local" 
-              value={form.date} 
-              onChange={handleChange} 
-              required 
-            />
-          </div>
-          <div>
-            <label htmlFor="deadline">Registration Deadline *</label>
-            <input 
-              id="deadline"
-              name="deadline" 
-              type="datetime-local" 
-              value={form.deadline} 
-              onChange={handleChange} 
-              required 
-            />
+    <div className="create-event-page">
+      <div className="create-event-container">
+        {/* Left Sidebar */}
+        <div className="create-event-sidebar">
+          <h1 className="create-event-title">Post an Event</h1>
+          
+          <div className="create-event-steps">
+            <div className="create-step active">
+              <div className="step-number">1</div>
+              <div className="step-content">
+                <div className="step-label">Step 1</div>
+                <div className="step-name">Event Details</div>
+              </div>
+            </div>
+            
+            <div className="step-divider"></div>
+            
+            <div className="create-step active">
+              <div className="step-number">2</div>
+              <div className="step-content">
+                <div className="step-label">Step 2</div>
+                <div className="step-name">Registration Form</div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div>
-          <label htmlFor="prizes">Prizes</label>
-          <input 
-            id="prizes"
-            name="prizes" 
-            placeholder="e.g., 1st Prize: ₹10,000, 2nd Prize: ₹5,000" 
-            value={form.prizes} 
-            onChange={handleChange} 
-          />
-        </div>
+        {/* Right Form Area */}
+        <div className="create-event-form-wrapper">
+          <form onSubmit={handleSubmit} className="create-event-form">
+            {/* Event Title */}
+            <div className="form-group">
+              <label htmlFor="title" className="form-label">
+                Event Title <span className="required">*</span>
+              </label>
+              <input 
+                id="title"
+                name="title" 
+                className="form-input"
+                placeholder="Enter Event Title." 
+                value={form.title} 
+                onChange={handleChange} 
+                maxLength={190}
+                required 
+              />
+              <p className="form-hint">Max 190 characters</p>
+            </div>
 
-        <div>
-          <label htmlFor="eligibility">Eligibility</label>
-          <input 
-            id="eligibility"
-            name="eligibility" 
-            placeholder="e.g., Open to all students" 
-            value={form.eligibility} 
-            onChange={handleChange} 
-          />
-        </div>
+            {/* Poster URL (Hidden styled input) */}
+            <div className="form-group">
+              <label htmlFor="poster_url" className="form-label">
+                Poster URL
+              </label>
+              <input 
+                id="poster_url"
+                name="poster_url" 
+                className="form-input"
+                placeholder="https://example.com/poster.jpg" 
+                value={form.poster_url} 
+                onChange={handleChange} 
+              />
+            </div>
 
-        <div>
-          <label htmlFor="category">Category</label>
-          <input 
-            id="category"
-            name="category" 
-            placeholder="e.g., Technical, Cultural, Sports" 
-            value={form.category} 
-            onChange={handleChange} 
-          />
-        </div>
+            {/* Category */}
+            <div className="form-group">
+              <label htmlFor="category" className="form-label">
+                Event Category <span className="required">*</span>
+              </label>
+              <select 
+                id="category"
+                name="category" 
+                className="form-select"
+                value={form.category} 
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Category</option>
+                <option value="Technical">Technical</option>
+                <option value="Cultural">Cultural</option>
+                <option value="Sports">Sports</option>
+                <option value="Workshop">Workshop & Webinar</option>
+                <option value="Competition">Competition</option>
+                <option value="Seminar">Seminar</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
 
-        <h3 style={{ marginTop: '2rem', color: 'var(--color-primary)' }}>📋 Custom Registration Fields</h3>
-        <p style={{ color: 'var(--color-text-light)', fontSize: '0.95rem', marginBottom: '1rem' }}>
-          Add custom fields to collect additional information from participants
-        </p>
+            {/* Description */}
+            <div className="form-group">
+              <label htmlFor="description" className="form-label">
+                Description <span className="required">*</span>
+              </label>
+              <textarea 
+                id="description"
+                name="description" 
+                className="form-textarea"
+                placeholder="Describe your event in detail..." 
+                value={form.description} 
+                onChange={handleChange} 
+                rows={6}
+                required 
+              />
+            </div>
 
-        {fields.map((field, i) => (
-          <div key={i} className="field-group">
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
-              <div style={{ flex: 2 }}>
-                <label>Field Name</label>
+            {/* Date and Deadline */}
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="date" className="form-label">
+                  Event Date & Time <span className="required">*</span>
+                </label>
                 <input 
-                  placeholder="e.g., Phone Number, College ID" 
-                  value={field.field_name} 
-                  onChange={e => handleFieldChange(i, 'field_name', e.target.value)} 
+                  id="date"
+                  name="date" 
+                  type="datetime-local" 
+                  className="form-input"
+                  value={form.date} 
+                  onChange={handleChange} 
                   required 
                 />
               </div>
-              <div style={{ flex: 1 }}>
-                <label>Field Type</label>
-                <select 
-                  value={field.field_type} 
-                  onChange={e => handleFieldChange(i, 'field_type', e.target.value)}
-                >
-                  <option value="text">Text</option>
-                  <option value="email">Email</option>
-                  <option value="number">Number</option>
-                </select>
+              <div className="form-group">
+                <label htmlFor="deadline" className="form-label">
+                  Registration Deadline <span className="required">*</span>
+                </label>
+                <input 
+                  id="deadline"
+                  name="deadline" 
+                  type="datetime-local" 
+                  className="form-input"
+                  value={form.deadline} 
+                  onChange={handleChange} 
+                  required 
+                />
               </div>
-              <button 
-                type="button" 
-                className="delete-btn" 
-                onClick={() => removeField(i)}
-                style={{ marginBottom: '0' }}
-              >
-                ✕ Remove
+            </div>
+
+            {/* Prizes */}
+            <div className="form-group">
+              <label htmlFor="prizes" className="form-label">
+                Prizes
+              </label>
+              <input 
+                id="prizes"
+                name="prizes" 
+                className="form-input"
+                placeholder="e.g., 1st Prize: ₹10,000, 2nd Prize: ₹5,000" 
+                value={form.prizes} 
+                onChange={handleChange} 
+              />
+            </div>
+
+            {/* Eligibility */}
+            <div className="form-group">
+              <label htmlFor="eligibility" className="form-label">
+                Eligibility
+              </label>
+              <input 
+                id="eligibility"
+                name="eligibility" 
+                className="form-input"
+                placeholder="e.g., Open to all students" 
+                value={form.eligibility} 
+                onChange={handleChange} 
+              />
+            </div>
+
+            {/* Custom Registration Fields Section */}
+            <div className="form-section-divider"></div>
+            <h3 className="form-section-title">Custom Registration Fields</h3>
+            <p className="form-section-subtitle">
+              Add custom fields to collect additional information from participants
+            </p>
+
+            {fields.map((field, i) => (
+              <div key={i} className="custom-field-group">
+                <div className="custom-field-row">
+                  <div className="form-group" style={{ flex: 2 }}>
+                    <label className="form-label">Field Name</label>
+                    <input 
+                      className="form-input"
+                      placeholder="e.g., Phone Number, College ID" 
+                      value={field.field_name} 
+                      onChange={e => handleFieldChange(i, 'field_name', e.target.value)} 
+                      required 
+                    />
+                  </div>
+                  <div className="form-group" style={{ flex: 1 }}>
+                    <label className="form-label">Field Type</label>
+                    <select 
+                      className="form-select"
+                      value={field.field_type} 
+                      onChange={e => handleFieldChange(i, 'field_type', e.target.value)}
+                    >
+                      <option value="text">Text</option>
+                      <option value="email">Email</option>
+                      <option value="number">Number</option>
+                    </select>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="remove-field-btn" 
+                    onClick={() => removeField(i)}
+                  >
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Remove
+                  </button>
+                </div>
+                <label className="checkbox-label">
+                  <input 
+                    type="checkbox" 
+                    className="form-checkbox"
+                    checked={field.is_required} 
+                    onChange={e => handleFieldChange(i, 'is_required', e.target.checked)} 
+                  />
+                  <span>Required field</span>
+                </label>
+              </div>
+            ))}
+
+            <button type="button" onClick={addField} className="add-field-btn">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Add Custom Field
+            </button>
+
+            {/* Form Actions */}
+            <div className="form-actions">
+              <button type="submit" disabled={loading} className="btn-primary">
+                {loading ? 'Creating Event...' : 'Create Event'}
               </button>
             </div>
-            <label style={{ display: 'flex', alignItems: 'center', marginTop: '0.5rem', cursor: 'pointer' }}>
-              <input 
-                type="checkbox" 
-                checked={field.is_required} 
-                onChange={e => handleFieldChange(i, 'is_required', e.target.checked)} 
-              />
-              <span style={{ marginLeft: '0.5rem' }}>Required field</span>
-            </label>
-          </div>
-        ))}
-
-        <button type="button" onClick={addField} style={{ width: '100%', marginBottom: '1rem' }}>
-          ➕ Add Custom Field
-        </button>
-
-        <button type="submit" disabled={loading} style={{ width: '100%' }}>
-          {loading ? 'Creating Event...' : '🚀 Create Event'}
-        </button>
-      </form>
+          </form>
+        </div>
+      </div>
       <ToastNotification message={message} type={messageType} onClose={() => setMessage('')} />
     </div>
   );

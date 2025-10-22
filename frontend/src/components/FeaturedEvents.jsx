@@ -82,7 +82,7 @@ const FeaturedEvents = ({ events }) => {
         {/* View All Link */}
         {currentEvents.length > 0 && (
           <div className="featured-footer">
-            <Link to="/" className="featured-view-all">
+            <Link to="/events" className="featured-view-all">
               View All Events
               <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
