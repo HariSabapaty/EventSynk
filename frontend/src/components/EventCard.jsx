@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 const EventCard = ({ event }) => (
   <div className="event-card">
     <img 
-      src={event.poster_url || 'https://via.placeholder.com/400x200/A6B1E1/FFFFFF?text=Event+Poster'} 
+      src={event.poster_url || 'https://via.placeholder.com/400x200/0A21C0/FFFFFF?text=Event+Poster'} 
       alt={event.title}
       onError={(e) => {
-        e.target.src = 'https://via.placeholder.com/400x200/A6B1E1/FFFFFF?text=Event+Poster';
+        e.target.src = 'https://via.placeholder.com/400x200/0A21C0/FFFFFF?text=Event+Poster';
       }}
     />
     <div className="event-card-content">
