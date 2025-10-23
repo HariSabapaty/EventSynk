@@ -27,13 +27,13 @@ const Home = () => {
     <div className="home-page">
       <HeroSection />
       
-      {/* Platform Features Section */}
-      <PlatformFeatures />
-      
       {/* Featured Events Section */}
       {!loading && events.length > 0 && (
         <FeaturedEvents events={events} />
       )}
+      
+      {/* Platform Features Section */}
+      <PlatformFeatures />
 
       {/* Call to Action Section */}
       <CallToAction />
