@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, make_response, current_app
 from models import db, Event, User, Registration, RegistrationField, RegistrationFieldResponse
-from utils.auth import token_required
+from utils.clerk_auth import clerk_token_required
 from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
@@ -43,8 +43,13 @@ def list_events():
 
 # Create event
 @event_routes.route('/', methods=['POST'])
-@token_required
-def create_event(current_user_id):
+@clerk_token_required
+def create_event(clerk_user_id):
+    # Get user from clerk_user_id
+    user = User.query.filter_by(clerk_user_id=clerk_user_id).first()
+    if not user:
+        return jsonify({'message': 'User not found. Please sync your account.', 'status': 404}), 404
+    
     # Handle file upload
     poster_url = None
     if 'poster' in request.files:
@@ -98,7 +103,7 @@ def create_event(current_user_id):
         prizes=prizes,
         eligibility=eligibility,
         category=category,
-        organiser_id=current_user_id
+        organiser_id=user.id
     )
     db.session.add(event)
     db.session.commit()
@@ -151,12 +156,16 @@ def get_event(event_id):
 
 # Update event
 @event_routes.route('/<int:event_id>', methods=['PUT'])
-@token_required
-def update_event(current_user_id, event_id):
+@clerk_token_required
+def update_event(clerk_user_id, event_id):
+    user = User.query.filter_by(clerk_user_id=clerk_user_id).first()
+    if not user:
+        return jsonify({'message': 'User not found. Please sync your account.'}), 404
+    
     event = Event.query.get(event_id)
     if not event:
         return jsonify({'message': 'Event not found.'}), 404
-    if event.organiser_id != current_user_id:
+    if event.organiser_id != user.id:
         return jsonify({'message': 'Forbidden: Only organiser can update.'}), 403
     data = request.get_json()
     # Update fields
@@ -178,12 +187,16 @@ def update_event(current_user_id, event_id):
 
 # Delete event
 @event_routes.route('/<int:event_id>', methods=['DELETE'])
-@token_required
-def delete_event(current_user_id, event_id):
+@clerk_token_required
+def delete_event(clerk_user_id, event_id):
+    user = User.query.filter_by(clerk_user_id=clerk_user_id).first()
+    if not user:
+        return jsonify({'message': 'User not found. Please sync your account.'}), 404
+    
     event = Event.query.get(event_id)
     if not event:
         return jsonify({'message': 'Event not found.'}), 404
-    if event.organiser_id != current_user_id:
+    if event.organiser_id != user.id:
         return jsonify({'message': 'Forbidden: Only organiser can delete.'}), 403
     db.session.delete(event)
     db.session.commit()
@@ -191,16 +204,20 @@ def delete_event(current_user_id, event_id):
 
 # Register for event
 @event_routes.route('/<int:event_id>/register', methods=['POST'])
-@token_required
-def register_event(current_user_id, event_id):
+@clerk_token_required
+def register_event(clerk_user_id, event_id):
+    user = User.query.filter_by(clerk_user_id=clerk_user_id).first()
+    if not user:
+        return jsonify({'message': 'User not found. Please sync your account.'}), 404
+    
     event = Event.query.get(event_id)
     if not event:
         return jsonify({'message': 'Event not found.', 'status': 404}), 404
     # Prevent duplicate registration
-    if Registration.query.filter_by(event_id=event_id, user_id=current_user_id).first():
+    if Registration.query.filter_by(event_id=event_id, user_id=user.id).first():
         return jsonify({'message': 'Already registered for this event.', 'status': 400}), 400
     data = request.get_json()
-    registration = Registration(event_id=event_id, user_id=current_user_id)
+    registration = Registration(event_id=event_id, user_id=user.id)
     db.session.add(registration)
     db.session.commit()
     # Store custom field responses
@@ -222,9 +239,13 @@ def register_event(current_user_id, event_id):
 
 # Cancel registration
 @event_routes.route('/<int:event_id>/register', methods=['DELETE'])
-@token_required
-def cancel_registration(current_user_id, event_id):
-    registration = Registration.query.filter_by(event_id=event_id, user_id=current_user_id).first()
+@clerk_token_required
+def cancel_registration(clerk_user_id, event_id):
+    user = User.query.filter_by(clerk_user_id=clerk_user_id).first()
+    if not user:
+        return jsonify({'message': 'User not found. Please sync your account.'}), 404
+    
+    registration = Registration.query.filter_by(event_id=event_id, user_id=user.id).first()
     if not registration:
         return jsonify({'message': 'Registration not found.'}), 404
     db.session.delete(registration)
@@ -233,17 +254,21 @@ def cancel_registration(current_user_id, event_id):
 
 # Get participants (organiser only)
 @event_routes.route('/<int:event_id>/participants', methods=['GET'])
-@token_required
-def get_participants(current_user_id, event_id):
+@clerk_token_required
+def get_participants(clerk_user_id, event_id):
+    user = User.query.filter_by(clerk_user_id=clerk_user_id).first()
+    if not user:
+        return jsonify({'message': 'User not found. Please sync your account.'}), 404
+    
     event = Event.query.get(event_id)
     if not event:
         return jsonify({'message': 'Event not found.'}), 404
-    if event.organiser_id != current_user_id:
+    if event.organiser_id != user.id:
         return jsonify({'message': 'Forbidden: Only organiser can view participants.'}), 403
     registrations = Registration.query.filter_by(event_id=event_id).all()
     participants = []
     for reg in registrations:
-        user = User.query.get(reg.user_id)
+        participant_user = User.query.get(reg.user_id)
         responses = RegistrationFieldResponse.query.filter_by(registration_id=reg.id).all()
         custom_fields = [
             {
@@ -252,17 +277,21 @@ def get_participants(current_user_id, event_id):
             } for r in responses
         ]
         participants.append({
-            'name': user.name,
-            'email': user.email,
+            'name': participant_user.name,
+            'email': participant_user.email,
             'fields': custom_fields
         })
     return jsonify({'participants': participants}), 200
 
 # Get user's created events
 @event_routes.route('/users/<int:user_id>/events', methods=['GET'])
-@token_required
-def get_user_events(current_user_id, user_id):
-    if current_user_id != user_id:
+@clerk_token_required
+def get_user_events(clerk_user_id, user_id):
+    user = User.query.filter_by(clerk_user_id=clerk_user_id).first()
+    if not user:
+        return jsonify({'message': 'User not found. Please sync your account.'}), 404
+    
+    if user.id != user_id:
         return jsonify({'message': 'Forbidden'}), 403
     events = Event.query.filter_by(organiser_id=user_id).all()
     result = [{
@@ -275,9 +304,13 @@ def get_user_events(current_user_id, user_id):
 
 # Get user's registrations
 @event_routes.route('/users/<int:user_id>/registrations', methods=['GET'])
-@token_required
-def get_user_registrations(current_user_id, user_id):
-    if current_user_id != user_id:
+@clerk_token_required
+def get_user_registrations(clerk_user_id, user_id):
+    user = User.query.filter_by(clerk_user_id=clerk_user_id).first()
+    if not user:
+        return jsonify({'message': 'User not found. Please sync your account.'}), 404
+    
+    if user.id != user_id:
         return jsonify({'message': 'Forbidden'}), 403
     registrations = Registration.query.filter_by(user_id=user_id).all()
     result = []

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@clerk/clerk-react": "^5.53.3",
     "axios": "^1.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",

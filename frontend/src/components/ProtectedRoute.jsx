@@ -3,9 +3,24 @@ import { AuthContext } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }) => {
-  const { token, loading } = useContext(AuthContext);
-  if (loading) return <div>Loading...</div>;
-  return token ? children : <Navigate to="/login" replace />;
+  const { user, loading, isSignedIn } = useContext(AuthContext);
+  
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: 'calc(100vh - 80px)',
+        fontSize: '1.2rem',
+        color: '#666'
+      }}>
+        Loading...
+      </div>
+    );
+  }
+  
+  return isSignedIn ? children : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;
