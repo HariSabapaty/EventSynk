@@ -7,20 +7,34 @@ import ToastNotification from '../components/ToastNotification';
 const MyEvents = () => {
   const { user } = useContext(AuthContext);
   const [events, setEvents] = useState([]);
+  const [fullEvents, setFullEvents] = useState([]);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('info');
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (user) {
       setLoading(true);
+      // Fetch basic events list
       axiosInstance.get(`/events/users/${user.id}/events`)
         .then(res => {
           setEvents(res.data.events);
+          // Fetch full details for each event
+          const eventPromises = res.data.events.map(event => 
+            axiosInstance.get(`/events/${event.id}`)
+              .then(response => response.data.event)
+              .catch(() => null)
+          );
+          return Promise.all(eventPromises);
+        })
+        .then(detailedEvents => {
+          setFullEvents(detailedEvents.filter(e => e !== null));
           setLoading(false);
         })
         .catch(() => {
           setEvents([]);
+          setFullEvents([]);
           setLoading(false);
         });
     }
@@ -32,7 +46,8 @@ const MyEvents = () => {
     try {
       await axiosInstance.delete(`/events/${id}`);
       setEvents(events.filter(e => e.id !== id));
-      setMessage('Event deleted successfully! 🗑️');
+      setFullEvents(fullEvents.filter(e => e.id !== id));
+      setMessage('Event deleted successfully!');
       setMessageType('success');
     } catch (err) {
       setMessage(err.response?.data?.message || 'Delete failed');
@@ -40,49 +55,182 @@ const MyEvents = () => {
     }
   };
 
+  // Filter events based on search
+  const filteredEvents = fullEvents.filter(event => {
+    const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         (event.organiser && event.organiser.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesSearch;
+  });
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
+
   return (
-    <div className="container">
-      <div className="page-header">
-        <h2>🎯 My Events</h2>
-        <p>Manage all your created events</p>
+    <div className="all-events-page">
+      <div className="container">
+        {/* Page Header */}
+        <div className="page-header">
+          <h1>My Events</h1>
+          <p>Manage all your created events</p>
+        </div>
+
+        {/* Search Bar */}
+        {!loading && fullEvents.length > 0 && (
+          <div className="events-filters">
+            <div className="search-bar">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8" strokeLinecap="round"/>
+                <path d="M21 21l-4.35-4.35" strokeLinecap="round"/>
+              </svg>
+              <input
+                type="text"
+                placeholder="Search your events..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
+              {searchQuery && (
+                <button 
+                  className="search-clear"
+                  onClick={() => setSearchQuery('')}
+                  aria-label="Clear search"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round"/>
+                  </svg>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Events Count */}
+        {!loading && fullEvents.length > 0 && (
+          <div className="events-count">
+            {filteredEvents.length} {filteredEvents.length === 1 ? 'event' : 'events'} found
+            {searchQuery && ` for "${searchQuery}"`}
+          </div>
+        )}
+
+        {/* Events List */}
+        {loading ? (
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
+            <p>Loading your events...</p>
+          </div>
+        ) : fullEvents.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-state-icon">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <rect x="3" y="4" width="18" height="18" rx="2" strokeLinecap="round"/>
+                <path d="M16 2v4M8 2v4M3 10h18" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <h3>No events created yet</h3>
+            <p>Start by creating your first event!</p>
+            <Link to="/create">
+              <button className="btn-primary">Create Your First Event</button>
+            </Link>
+          </div>
+        ) : filteredEvents.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-state-icon">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <rect x="3" y="4" width="18" height="18" rx="2" strokeLinecap="round"/>
+                <path d="M16 2v4M8 2v4M3 10h18" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <h3>No events found</h3>
+            <p>Try adjusting your search</p>
+            <button 
+              className="btn-primary"
+              onClick={() => setSearchQuery('')}
+            >
+              Clear Search
+            </button>
+          </div>
+        ) : (
+          <div className="event-list">
+            {filteredEvents.map(event => (
+              <MyEventCard 
+                key={event.id} 
+                event={event} 
+                onDelete={handleDelete}
+                formatDate={formatDate}
+              />
+            ))}
+          </div>
+        )}
       </div>
       
-      {loading ? (
-        <div className="loading">Loading your events</div>
-      ) : events.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-          <h3>📭 No Events Yet</h3>
-          <p style={{ color: 'var(--color-text-light)', marginBottom: '1.5rem' }}>
-            You haven't created any events yet. Start by creating your first event!
-          </p>
-          <Link to="/create">
-            <button>✨ Create Your First Event</button>
-          </Link>
-        </div>
-      ) : (
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          {events.map(event => (
-            <div key={event.id} className="event-item">
-              <div>
-                <Link to={`/events/${event.id}`}>{event.title}</Link>
-                <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem', fontSize: '0.9rem', color: 'var(--color-text-light)' }}>
-                  <span>📅 {new Date(event.date).toLocaleDateString('en-US', { 
-                    month: 'short', 
-                    day: 'numeric',
-                    year: 'numeric'
-                  })}</span>
-                  <span>👥 {event.registration_count} registrations</span>
-                </div>
-              </div>
-              <button className="delete-btn" onClick={() => handleDelete(event.id)}>
-                🗑️ Delete
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-      
       <ToastNotification message={message} type={messageType} onClose={() => setMessage('')} />
+    </div>
+  );
+};
+
+const MyEventCard = ({ event, onDelete, formatDate }) => {
+  const category = event.category || 'Campus Event';
+
+  return (
+    <div className="event-card my-event-card">
+      <div className="event-card-image-wrapper">
+        <img 
+          src={event.poster_url || `https://via.placeholder.com/400x240/0A21C0/FFFFFF?text=${encodeURIComponent(event.title)}`}
+          alt={event.title}
+          className="event-card-image"
+          onError={(e) => {
+            e.target.src = `https://via.placeholder.com/400x240/0A21C0/FFFFFF?text=${encodeURIComponent(event.title)}`;
+          }}
+        />
+        <div className="event-card-badge">{category}</div>
+      </div>
+      
+      <div className="event-card-content">
+        <h3 className="event-card-title">{event.title}</h3>
+        
+        <div className="event-card-meta">
+          <div className="event-card-meta-item">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>{formatDate(event.date)}</span>
+          </div>
+          
+          <div className="event-card-meta-item">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span>{event.registration_count || 0}</span>
+          </div>
+        </div>
+
+        <div className="event-card-actions">
+          <Link 
+            to={`/events/${event.id}`}
+            className="event-card-button event-card-button-view"
+          >
+            View Details
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+          <button 
+            onClick={() => onDelete(event.id)}
+            className="event-card-button event-card-button-delete"
+          >
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Delete
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
