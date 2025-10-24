@@ -30,9 +30,35 @@ const FeaturedEvents = ({ events }) => {
   const currentEvents = categorizedEvents[activeTab];
 
   const tabs = [
-    { id: 'upcoming', label: 'Upcoming', icon: '📅' },
-    { id: 'trending', label: 'Trending', icon: '🔥' },
-    { id: 'new', label: 'New', icon: '✨' }
+    { 
+      id: 'upcoming', 
+      label: 'Upcoming', 
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" strokeLinecap="round"/>
+          <path d="M16 2v4M8 2v4M3 10h18" strokeLinecap="round"/>
+          <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" strokeLinecap="round"/>
+        </svg>
+      )
+    },
+    { 
+      id: 'trending', 
+      label: 'Trending', 
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )
+    },
+    { 
+      id: 'new', 
+      label: 'New', 
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )
+    }
   ];
 
   return (
@@ -40,7 +66,6 @@ const FeaturedEvents = ({ events }) => {
       <div className="featured-container">
         <div className="featured-header">
           <h2 className="featured-title">
-            <span className="featured-emoji">🔥</span>
             Discover What's Happening at SSN
           </h2>
           <p className="featured-subtitle">
@@ -230,12 +255,35 @@ const FeaturedEventCard = ({ event, index }) => {
         <div className="featured-card-badges">
           {event.mode && (
             <span className="featured-info-badge">
-              {event.mode === 'Online' ? '🌐' : '📍'} {event.mode}
+              {event.mode === 'Online' ? (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" strokeLinecap="round"/>
+                  <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" strokeLinecap="round"/>
+                </svg>
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="12" cy="10" r="3" strokeLinecap="round"/>
+                </svg>
+              )}
+              {event.mode}
             </span>
           )}
           {event.participation_type && (
             <span className="featured-info-badge">
-              {event.participation_type === 'Individual' ? '👤' : '👥'} {event.participation_type}
+              {event.participation_type === 'Individual' ? (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="12" cy="7" r="4" strokeLinecap="round"/>
+                </svg>
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="9" cy="7" r="4" strokeLinecap="round"/>
+                  <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              )}
+              {event.participation_type}
             </span>
           )}
         </div>

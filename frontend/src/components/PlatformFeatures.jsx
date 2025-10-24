@@ -50,7 +50,6 @@ const PlatformFeatures = () => {
       <div className="platform-features-container">
         <div className="platform-features-header">
           <h2 className="platform-features-title">
-            <span className="platform-features-emoji">✨</span>
             Why Use EventSynk?
           </h2>
           <p className="platform-features-subtitle">

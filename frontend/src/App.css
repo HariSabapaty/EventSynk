@@ -1980,10 +1980,12 @@ input.error-input, textarea.error-input, select.error-input {
 }
 
 .hero-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  text-align: center;
+  max-width: 1000px;
+  margin: 0 auto;
   animation: fadeInUp 0.8s ease-out;
 }
 
@@ -1992,7 +1994,7 @@ input.error-input, textarea.error-input, select.error-input {
 }
 
 .hero-title {
-  font-size: 3.5rem;
+  font-size: 4.5rem;
   font-weight: 700;
   line-height: 1.2;
   margin-bottom: 1.5rem;
@@ -2009,11 +2011,11 @@ input.error-input, textarea.error-input, select.error-input {
 }
 
 .hero-subtitle {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   line-height: 1.7;
   color: rgba(255, 255, 255, 0.85);
-  margin-bottom: 2.5rem;
-  max-width: 540px;
+  margin: 0 auto 2.5rem;
+  max-width: 700px;
   animation: fadeInUp 0.8s ease-out 0.2s both;
 }
 
@@ -2021,6 +2023,7 @@ input.error-input, textarea.error-input, select.error-input {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
+  justify-content: center;
   animation: fadeInUp 0.8s ease-out 0.4s both;
 }
 
@@ -2073,11 +2076,7 @@ input.error-input, textarea.error-input, select.error-input {
 }
 
 .hero-visual {
-  position: relative;
-  height: 500px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: none;
 }
 
 .hero-shapes {
@@ -2257,17 +2256,15 @@ input.error-input, textarea.error-input, select.error-input {
 /* ===== Hero Responsive ===== */
 @media (max-width: 968px) {
   .hero-content {
-    grid-template-columns: 1fr;
-    gap: 3rem;
     text-align: center;
   }
 
   .hero-title {
-    font-size: 2.5rem;
+    font-size: 3rem;
   }
 
   .hero-subtitle {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     margin: 0 auto 2rem;
   }
 
@@ -2276,11 +2273,7 @@ input.error-input, textarea.error-input, select.error-input {
   }
 
   .hero-visual {
-    height: 300px;
-  }
-
-  .hero-illustration svg {
-    max-width: 280px;
+    display: none;
   }
 
   .events-section {
@@ -2303,11 +2296,11 @@ input.error-input, textarea.error-input, select.error-input {
   }
 
   .hero-title {
-    font-size: 2rem;
+    font-size: 2.5rem;
   }
 
   .hero-subtitle {
-    font-size: 1rem;
+    font-size: 1.125rem;
   }
 
   .hero-buttons {
@@ -2821,7 +2814,7 @@ input.error-input, textarea.error-input, select.error-input {
 /* ===== Platform Features Section ===== */
 .platform-features-section {
   padding: 6rem 0;
-  background: white;
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
   position: relative;
 }
 
@@ -2839,7 +2832,7 @@ input.error-input, textarea.error-input, select.error-input {
 .platform-features-title {
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--color-dark);
+  color: white;
   margin-bottom: 0.75rem;
   letter-spacing: -0.02em;
   display: flex;
@@ -2855,7 +2848,7 @@ input.error-input, textarea.error-input, select.error-input {
 
 .platform-features-subtitle {
   font-size: 1.125rem;
-  color: var(--color-text-light);
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 400;
   max-width: 600px;
   margin: 0 auto;
@@ -3014,7 +3007,7 @@ input.error-input, textarea.error-input, select.error-input {
 .cta-section {
   position: relative;
   padding: 6rem 2rem;
-  background: linear-gradient(135deg, #0A21C0 0%, #050A44 50%, #6366F1 100%);
+  background: white;
   overflow: hidden;
 }
 
@@ -3026,8 +3019,8 @@ input.error-input, textarea.error-input, select.error-input {
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(10, 33, 192, 0.3) 0%, transparent 50%);
+    radial-gradient(circle at 20% 30%, rgba(10, 33, 192, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(5, 10, 68, 0.05) 0%, transparent 50%);
   pointer-events: none;
 }
 
@@ -3046,7 +3039,7 @@ input.error-input, textarea.error-input, select.error-input {
 .cta-headline {
   font-size: 3rem;
   font-weight: 700;
-  color: white;
+  color: var(--color-primary);
   margin-bottom: 1.25rem;
   letter-spacing: -0.03em;
   line-height: 1.2;
@@ -3054,7 +3047,7 @@ input.error-input, textarea.error-input, select.error-input {
 
 .cta-subtext {
   font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--color-text-light);
   margin-bottom: 2.5rem;
   line-height: 1.6;
   max-width: 600px;
@@ -3067,22 +3060,22 @@ input.error-input, textarea.error-input, select.error-input {
   align-items: center;
   gap: 0.75rem;
   padding: 1.125rem 3rem;
-  background: white;
-  color: var(--color-primary);
+  background: var(--color-primary);
+  color: white;
   border: none;
   border-radius: 50px;
   font-size: 1.125rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgba(10, 33, 192, 0.25);
   letter-spacing: 0.02em;
 }
 
 .cta-button:hover {
   transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 16px 48px rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 16px 48px rgba(10, 33, 192, 0.35);
+  background: var(--color-hover);
 }
 
 .cta-button:active {
@@ -3100,12 +3093,12 @@ input.error-input, textarea.error-input, select.error-input {
 .cta-login-text {
   margin-top: 2rem;
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--color-text-light);
   font-weight: 400;
 }
 
 .cta-login-link {
-  color: white;
+  color: var(--color-primary);
   font-weight: 600;
   text-decoration: none;
   background: none;

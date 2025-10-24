@@ -12,8 +12,7 @@ const HeroSection = () => {
         <div className="hero-content">
           <div className="hero-text">
             <h1 className="hero-title">
-              Empowering SSN College Events — Simplified with{' '}
-              <span className="hero-highlight">EventSynk</span>
+              Your Gateway to SSN College Events
             </h1>
             <p className="hero-subtitle">
               Create, discover, and join campus events effortlessly — all in one place.
