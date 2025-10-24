@@ -70,6 +70,10 @@ def create_event(clerk_user_id):
     prizes = request.form.get('prizes')
     eligibility = request.form.get('eligibility')
     category = request.form.get('category')
+    mode = request.form.get('mode')
+    venue = request.form.get('venue')
+    participation_type = request.form.get('participation_type')
+    team_size = request.form.get('team_size')
     
     # Parse fields from JSON string
     import json
@@ -81,7 +85,7 @@ def create_event(clerk_user_id):
             fields = []
 
     # Validate required fields
-    if not title or not description or not date or not deadline:
+    if not title or not description or not date or not deadline or not category:
         return jsonify({'message': 'Missing required fields.', 'status': 400}), 400
 
     try:
@@ -91,8 +95,32 @@ def create_event(clerk_user_id):
         return jsonify({'message': 'Invalid date format. Use ISO format.', 'status': 400}), 400
 
     now = datetime.utcnow()
-    if deadline_date > event_date or deadline_date < now:
-        return jsonify({'message': 'Deadline must be before event date and not in the past.', 'status': 400}), 400
+    
+    # Validate dates are in the future
+    if event_date <= now:
+        return jsonify({'message': 'Event date must be in the future.', 'status': 400}), 400
+    
+    if deadline_date <= now:
+        return jsonify({'message': 'Registration deadline must be in the future.', 'status': 400}), 400
+    
+    # Validate deadline is before event date
+    if deadline_date >= event_date:
+        return jsonify({'message': 'Registration deadline must be before the event date.', 'status': 400}), 400
+
+    # Validate mode and venue
+    if mode == 'Offline' and not venue:
+        return jsonify({'message': 'Venue is required for offline events.', 'status': 400}), 400
+
+    # Validate team size
+    if participation_type == 'Team' and team_size:
+        try:
+            team_size = int(team_size)
+            if team_size < 2:
+                return jsonify({'message': 'Team size must be at least 2.', 'status': 400}), 400
+        except ValueError:
+            return jsonify({'message': 'Invalid team size.', 'status': 400}), 400
+    else:
+        team_size = None
 
     event = Event(
         title=title,
@@ -103,6 +131,10 @@ def create_event(clerk_user_id):
         prizes=prizes,
         eligibility=eligibility,
         category=category,
+        mode=mode,
+        venue=venue,
+        participation_type=participation_type,
+        team_size=team_size,
         organiser_id=user.id
     )
     db.session.add(event)
@@ -148,6 +180,10 @@ def get_event(event_id):
         'prizes': event.prizes,
         'eligibility': event.eligibility,
         'category': event.category,
+        'mode': event.mode,
+        'venue': event.venue,
+        'participation_type': event.participation_type,
+        'team_size': event.team_size,
         'organiser': organiser.name if organiser else None,
         'organiser_id': event.organiser_id,
         'registration_count': registration_count,
@@ -170,7 +206,7 @@ def update_event(clerk_user_id, event_id):
         return jsonify({'message': 'Forbidden: Only organiser can update.'}), 403
     data = request.get_json()
     # Update fields
-    for key in ['title', 'description', 'poster_url', 'date', 'deadline', 'prizes', 'eligibility', 'category']:
+    for key in ['title', 'description', 'poster_url', 'date', 'deadline', 'prizes', 'eligibility', 'category', 'mode', 'venue', 'participation_type', 'team_size']:
         if key in data:
             setattr(event, key, data[key])
     # Validate date and deadline if updated
@@ -181,8 +217,12 @@ def update_event(clerk_user_id, event_id):
         except Exception:
             return jsonify({'message': 'Invalid date format.'}), 400
         now = datetime.utcnow()
-        if deadline_date > event_date or deadline_date < now:
-            return jsonify({'message': 'Deadline must be before event date and not in the past.'}), 400
+        if event_date <= now:
+            return jsonify({'message': 'Event date must be in the future.'}), 400
+        if deadline_date <= now:
+            return jsonify({'message': 'Registration deadline must be in the future.'}), 400
+        if deadline_date >= event_date:
+            return jsonify({'message': 'Registration deadline must be before the event date.'}), 400
     db.session.commit()
     return jsonify({'message': 'Event updated successfully.'}), 200
 

@@ -23,8 +23,12 @@ class Event(db.Model):
     date = db.Column(db.DateTime, nullable=False)
     deadline = db.Column(db.DateTime, nullable=False)
     prizes = db.Column(db.String(255), nullable=True)
-    eligibility = db.Column(db.String(255), nullable=True)
+    eligibility = db.Column(db.Text, nullable=True)
     category = db.Column(db.String(100), nullable=True)
+    mode = db.Column(db.String(50), nullable=True)  # 'Online' or 'Offline'
+    venue = db.Column(db.String(255), nullable=True)  # For offline events
+    participation_type = db.Column(db.String(50), nullable=True)  # 'Individual' or 'Team'
+    team_size = db.Column(db.Integer, nullable=True)  # Max team size for team events
     organiser_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

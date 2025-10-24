@@ -194,6 +194,65 @@ const EventDetails = () => {
               </div>
             </div>
 
+            {/* Event Mode */}
+            {event.mode && (
+              <div className="event-detail-card">
+                <div className="event-detail-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    {event.mode === 'Online' ? (
+                      <>
+                        <circle cx="12" cy="12" r="10" strokeLinecap="round"/>
+                        <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" strokeLinecap="round"/>
+                      </>
+                    ) : (
+                      <>
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round"/>
+                        <circle cx="12" cy="10" r="3" strokeLinecap="round"/>
+                      </>
+                    )}
+                  </svg>
+                </div>
+                <div className="event-detail-content">
+                  <div className="event-detail-label">Event Mode</div>
+                  <div className="event-detail-value">{event.mode}</div>
+                  {event.mode === 'Offline' && event.venue && (
+                    <div className="event-detail-time">{event.venue}</div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Participation Type */}
+            {event.participation_type && (
+              <div className="event-detail-card">
+                <div className="event-detail-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    {event.participation_type === 'Individual' ? (
+                      <>
+                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <circle cx="12" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round"/>
+                      </>
+                    ) : (
+                      <>
+                        <path d="M17 21v-2a4 4 0 00-3-3.87" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M9 21v-2a4 4 0 013-3.87" strokeLinecap="round" strokeLinejoin="round"/>
+                        <circle cx="9" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M23 21v-2a4 4 0 00-3-3.87" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M16 3.13a4 4 0 010 7.75" strokeLinecap="round" strokeLinejoin="round"/>
+                      </>
+                    )}
+                  </svg>
+                </div>
+                <div className="event-detail-content">
+                  <div className="event-detail-label">Participation</div>
+                  <div className="event-detail-value">{event.participation_type}</div>
+                  {event.participation_type === 'Team' && event.team_size && (
+                    <div className="event-detail-time">Max {event.team_size} members per team</div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {event.prizes && (
               <div className="event-detail-card">
                 <div className="event-detail-icon">
@@ -210,7 +269,7 @@ const EventDetails = () => {
             )}
 
             {event.eligibility && (
-              <div className="event-detail-card">
+              <div className="event-detail-card event-detail-card-wide">
                 <div className="event-detail-icon">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M22 11.08V12a10 10 0 11-5.93-9.14" strokeLinecap="round" strokeLinejoin="round"/>
@@ -218,8 +277,8 @@ const EventDetails = () => {
                   </svg>
                 </div>
                 <div className="event-detail-content">
-                  <div className="event-detail-label">Eligibility</div>
-                  <div className="event-detail-value">{event.eligibility}</div>
+                  <div className="event-detail-label">Eligibility Criteria</div>
+                  <div className="event-detail-value event-detail-multiline">{event.eligibility}</div>
                 </div>
               </div>
             )}
@@ -349,6 +408,22 @@ const EventDetails = () => {
                             required={field.is_required}
                             placeholder={`Enter ${field.field_name.toLowerCase()}`}
                             className="registration-field-input"
+                            pattern={
+                              field.field_name.toLowerCase().includes('mobile') || 
+                              field.field_name.toLowerCase().includes('phone') ||
+                              field.field_name.toLowerCase().includes('roll') ||
+                              field.field_name.toLowerCase().includes('number')
+                              ? '[0-9]+' 
+                              : undefined
+                            }
+                            title={
+                              field.field_name.toLowerCase().includes('mobile') || 
+                              field.field_name.toLowerCase().includes('phone') ||
+                              field.field_name.toLowerCase().includes('roll') ||
+                              field.field_name.toLowerCase().includes('number')
+                              ? 'Please enter numbers only' 
+                              : undefined
+                            }
                             onChange={e => {
                               const value = e.target.value;
                               setResponses(prev => {
