@@ -154,21 +154,17 @@ const EventDetails = () => {
                 </svg>
               </div>
               <div className="event-detail-content">
-                <div className="event-detail-label">Event Date</div>
-                <div className="event-detail-value">
+                <span className="event-detail-label">Event Date:</span>
+                <span className="event-detail-value">
                   {new Date(event.date).toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric'
-                  })}
-                </div>
-                <div className="event-detail-time">
-                  {new Date(event.date).toLocaleTimeString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    year: 'numeric'
+                  })} at {new Date(event.date).toLocaleTimeString('en-US', { 
                     hour: '2-digit', 
                     minute: '2-digit'
                   })}
-                </div>
+                </span>
               </div>
             </div>
 
@@ -180,20 +176,14 @@ const EventDetails = () => {
                 </svg>
               </div>
               <div className="event-detail-content">
-                <div className="event-detail-label">Registration Deadline</div>
-                <div className="event-detail-value">
+                <span className="event-detail-label">Registration Deadline:</span>
+                <span className="event-detail-value">
                   {new Date(event.deadline).toLocaleDateString('en-US', { 
                     month: 'short', 
                     day: 'numeric',
                     year: 'numeric'
                   })}
-                </div>
-                <div className="event-detail-time">
-                  {new Date(event.deadline).toLocaleTimeString('en-US', { 
-                    hour: '2-digit', 
-                    minute: '2-digit'
-                  })}
-                </div>
+                </span>
               </div>
             </div>
 
@@ -206,9 +196,10 @@ const EventDetails = () => {
                 </svg>
               </div>
               <div className="event-detail-content">
-                <div className="event-detail-label">Participants</div>
-                <div className="event-detail-value">{event.registration_count}</div>
-                <div className="event-detail-time">Registered</div>
+                <span className="event-detail-label">Participants:</span>
+                <span className="event-detail-value">
+                  {event.current_participants} Registered
+                </span>
               </div>
             </div>
 
@@ -231,11 +222,11 @@ const EventDetails = () => {
                   </svg>
                 </div>
                 <div className="event-detail-content">
-                  <div className="event-detail-label">Event Mode</div>
-                  <div className="event-detail-value">{event.mode}</div>
-                  {event.mode === 'Offline' && event.venue && (
-                    <div className="event-detail-time">{event.venue}</div>
-                  )}
+                  <span className="event-detail-label">Event Mode:</span>
+                  <span className="event-detail-value">
+                    {event.mode}
+                    {event.mode === 'Offline' && event.venue && ` • ${event.venue}`}
+                  </span>
                 </div>
               </div>
             )}
@@ -262,11 +253,11 @@ const EventDetails = () => {
                   </svg>
                 </div>
                 <div className="event-detail-content">
-                  <div className="event-detail-label">Participation</div>
-                  <div className="event-detail-value">{event.participation_type}</div>
-                  {event.participation_type === 'Team' && event.team_size && (
-                    <div className="event-detail-time">Max {event.team_size} members per team</div>
-                  )}
+                  <span className="event-detail-label">Participation:</span>
+                  <span className="event-detail-value">
+                    {event.participation_type}
+                    {event.participation_type === 'Team' && event.team_size && ` • Max ${event.team_size} members per team`}
+                  </span>
                 </div>
               </div>
             )}
@@ -280,8 +271,8 @@ const EventDetails = () => {
                   </svg>
                 </div>
                 <div className="event-detail-content">
-                  <div className="event-detail-label">Prizes</div>
-                  <div className="event-detail-value">{event.prizes}</div>
+                  <span className="event-detail-label">Prizes:</span>
+                  <span className="event-detail-value">{event.prizes}</span>
                 </div>
               </div>
             )}
@@ -295,8 +286,8 @@ const EventDetails = () => {
                   </svg>
                 </div>
                 <div className="event-detail-content">
-                  <div className="event-detail-label">Eligibility Criteria</div>
-                  <div className="event-detail-value event-detail-multiline">{event.eligibility}</div>
+                  <span className="event-detail-label">Eligibility:</span>
+                  <span className="event-detail-value">{event.eligibility}</span>
                 </div>
               </div>
             )}
