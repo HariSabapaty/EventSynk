@@ -149,6 +149,7 @@ def get_event(event_id):
         'eligibility': event.eligibility,
         'category': event.category,
         'organiser': organiser.name if organiser else None,
+        'organiser_id': event.organiser_id,
         'registration_count': registration_count,
         'fields': field_defs
     }

@@ -778,6 +778,121 @@ input.error-input, textarea.error-input, select.error-input {
   display: block;
 }
 
+/* View Poster Button */
+.view-poster-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #0A21C0 0%, #1a3fd6 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(10, 33, 192, 0.2);
+}
+
+.view-poster-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(10, 33, 192, 0.3);
+}
+
+.view-poster-btn svg {
+  flex-shrink: 0;
+}
+
+/* Poster Modal */
+.poster-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 2rem;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.poster-modal-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.poster-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 1;
+}
+
+.poster-modal-close:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: rotate(90deg);
+}
+
+.poster-modal-image {
+  max-width: 100%;
+  max-height: calc(90vh - 6rem);
+  width: auto;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.poster-modal-title {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #141619;
+}
+
 .event-details-section {
   margin: 2.5rem 0;
 }
@@ -1050,6 +1165,250 @@ input.error-input, textarea.error-input, select.error-input {
   box-shadow: 0 4px 12px rgba(10, 33, 192, 0.3);
 }
 
+/* Organizer Message State */
+.registration-organizer-message {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.registration-organizer-message svg {
+  color: #0A21C0;
+  margin-bottom: 1.5rem;
+}
+
+.registration-organizer-message h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #141619;
+  margin-bottom: 0.75rem;
+}
+
+.registration-organizer-message p {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.organizer-dashboard-btn {
+  padding: 0.875rem 2rem;
+  background: linear-gradient(135deg, #0A21C0 0%, #1a3fd6 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.organizer-dashboard-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(10, 33, 192, 0.3);
+}
+
+/* Participants Section */
+.participants-section {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 2px solid #E8E8E8;
+  text-align: left;
+}
+
+.participants-header {
+  margin-bottom: 1.5rem;
+}
+
+.participants-header h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #141619;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.participants-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  color: #666;
+}
+
+.participants-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.participants-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.participants-list::-webkit-scrollbar-track {
+  background: #F8F9FB;
+  border-radius: 3px;
+}
+
+.participants-list::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 3px;
+}
+
+.participants-list::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
+
+.participant-card {
+  background: #F8F9FB;
+  border: 2px solid #E8E8E8;
+  border-radius: 12px;
+  padding: 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.participant-card:hover {
+  border-color: #0A21C0;
+  box-shadow: 0 2px 8px rgba(10, 33, 192, 0.1);
+}
+
+.participant-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.participant-avatar {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #0A21C0 0%, #1a3fd6 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.participant-avatar svg {
+  color: white;
+}
+
+.participant-info h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #141619;
+  margin: 0 0 0.25rem 0;
+}
+
+.participant-info p {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 0;
+}
+
+.participant-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #E8E8E8;
+}
+
+.participant-field {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.field-label {
+  font-weight: 600;
+  color: #141619;
+  min-width: fit-content;
+}
+
+.field-value {
+  color: #666;
+  word-break: break-word;
+}
+
+.no-participants {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  background: #F8F9FB;
+  border-radius: 12px;
+}
+
+.no-participants svg {
+  color: #9CA3AF;
+  margin-bottom: 1rem;
+}
+
+.no-participants p {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #141619;
+  margin: 0.5rem 0;
+}
+
+.no-participants span {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+/* Already Registered State */
+.registration-already-registered {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.registration-already-registered svg {
+  color: #22C55E;
+  margin-bottom: 1.5rem;
+}
+
+.registration-already-registered h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #141619;
+  margin-bottom: 0.75rem;
+}
+
+.registration-already-registered p {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.view-registrations-btn {
+  padding: 0.875rem 2rem;
+  background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.view-registrations-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .event-details-container {
@@ -1082,6 +1441,25 @@ input.error-input, textarea.error-input, select.error-input {
 
   .event-registration-card {
     padding: 1.5rem;
+  }
+
+  .poster-modal-overlay {
+    padding: 1rem;
+  }
+
+  .poster-modal-content {
+    padding: 1rem;
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+
+  .poster-modal-image {
+    max-height: calc(95vh - 5rem);
+  }
+
+  .view-poster-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 
