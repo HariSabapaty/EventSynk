@@ -18,6 +18,7 @@ const EventDetails = () => {
   const [participants, setParticipants] = useState([]);
   const [loadingParticipants, setLoadingParticipants] = useState(false);
   const [showPosterModal, setShowPosterModal] = useState(false);
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
 
   useEffect(() => {
     axiosInstance.get(`/events/${id}`)
@@ -70,6 +71,7 @@ const EventDetails = () => {
       setMessage('Registered successfully! 🎉');
       setMessageType('success');
       setLoading(false);
+      setShowRegistrationModal(false);
       setTimeout(() => navigate('/my-registrations'), 2000);
     } catch (err) {
       setMessage(err.response?.data?.message || 'Registration failed');
@@ -110,17 +112,33 @@ const EventDetails = () => {
             </div>
           </div>
 
-          <button 
-            onClick={() => setShowPosterModal(true)} 
-            className="view-poster-btn"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-              <circle cx="8.5" cy="8.5" r="1.5"/>
-              <path d="M21 15l-5-5L5 21"/>
-            </svg>
-            View Event Poster
-          </button>
+          <div className="event-action-buttons">
+            <button 
+              onClick={() => setShowPosterModal(true)} 
+              className="view-poster-btn"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <path d="M21 15l-5-5L5 21"/>
+              </svg>
+              View Event Poster
+            </button>
+
+            {/* Registration button */}
+            {user && user.id !== event.organiser_id && !isRegistered && (
+              <button 
+                onClick={() => setShowRegistrationModal(true)} 
+                className="register-event-btn"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 11l3 3L22 4" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" strokeLinecap="round"/>
+                </svg>
+                Register for Event
+              </button>
+            )}
+          </div>
 
           <div className="event-details-section">
             <h3 className="event-section-title">About This Event</h3>
@@ -285,209 +303,169 @@ const EventDetails = () => {
           </div>
         </div>
 
-        {/* Right Column - Registration Form */}
-        <div className="event-details-right">
-          <div className="event-registration-card">
-            {user ? (
-              // Check if current user is the organizer
-              user.id === event.organiser_id ? (
-                <div className="registration-organizer-message">
-                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" opacity="0.3"/>
-                    <path d="M2 17L12 22L22 17V12L12 17L2 12V17Z" fill="currentColor"/>
-                  </svg>
-                  <h3>You're the Organizer</h3>
-                  <p>As the event organizer, you cannot register for your own event. View your registered participants below.</p>
-                  <button 
-                    onClick={() => navigate('/my-events')} 
-                    className="organizer-dashboard-btn"
-                  >
-                    Go to My Events
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-
-                  {/* Participants List */}
-                  <div className="participants-section">
-                    <div className="participants-header">
-                      <h3>Registered Participants ({participants.length})</h3>
-                    </div>
-                    
-                    {loadingParticipants ? (
-                      <div className="participants-loading">
-                        <div className="btn-spinner"></div>
-                        <span>Loading participants...</span>
+        {/* Participants List for Organizer */}
+        {user && user.id === event.organiser_id && (
+          <div className="participants-section-fullwidth">
+            <div className="participants-header">
+              <h3>Registered Participants ({participants.length})</h3>
+            </div>
+            
+            {loadingParticipants ? (
+              <div className="participants-loading">
+                <div className="btn-spinner"></div>
+                <span>Loading participants...</span>
+              </div>
+            ) : participants.length > 0 ? (
+              <div className="participants-list">
+                {participants.map((participant, index) => (
+                  <div key={index} className="participant-card">
+                    <div className="participant-header">
+                      <div className="participant-avatar">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <circle cx="12" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
                       </div>
-                    ) : participants.length > 0 ? (
-                      <div className="participants-list">
-                        {participants.map((participant, index) => (
-                          <div key={index} className="participant-card">
-                            <div className="participant-header">
-                              <div className="participant-avatar">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" strokeLinecap="round" strokeLinejoin="round"/>
-                                  <circle cx="12" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
-                              </div>
-                              <div className="participant-info">
-                                <h4>{participant.name}</h4>
-                                <p>{participant.email}</p>
-                              </div>
-                            </div>
-                            {participant.fields && participant.fields.length > 0 && (
-                              <div className="participant-fields">
-                                {participant.fields.map((field, fieldIndex) => (
-                                  <div key={fieldIndex} className="participant-field">
-                                    <span className="field-label">{field.field_name}:</span>
-                                    <span className="field-value">{field.response_value}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
+                      <div className="participant-info">
+                        <h4>{participant.name}</h4>
+                        <p>{participant.email}</p>
+                      </div>
+                    </div>
+                    {participant.fields && participant.fields.length > 0 && (
+                      <div className="participant-fields">
+                        {participant.fields.map((field, fieldIndex) => (
+                          <div key={fieldIndex} className="participant-field">
+                            <span className="field-label">{field.field_name}:</span>
+                            <span className="field-value">{field.response_value}</span>
                           </div>
                         ))}
                       </div>
-                    ) : (
-                      <div className="no-participants">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" strokeLinecap="round" strokeLinejoin="round"/>
-                          <circle cx="9" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round"/>
-                          <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                        <p>No participants yet</p>
-                        <span>Participants will appear here once they register</span>
-                      </div>
                     )}
                   </div>
-                </div>
-              ) : isRegistered ? (
-                // User is already registered
-                <div className="registration-already-registered">
-                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <circle cx="12" cy="12" r="10" strokeLinecap="round"/>
-                    <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"/>
-                  </svg>
-                  <h3>Already Registered</h3>
-                  <p>You've successfully registered for this event. Check your registrations to view details or manage your participation.</p>
-                  <button 
-                    onClick={() => navigate('/my-registrations')} 
-                    className="view-registrations-btn"
-                  >
-                    View My Registrations
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                </div>
-              ) : (
-                // Show registration form
-                <>
-                  <div className="registration-card-header">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M9 11l3 3L22 4" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" strokeLinecap="round"/>
-                    </svg>
-                    <h2>Register for Event</h2>
-                  </div>
-                  <p className="registration-card-subtitle">
-                    Fill in the details below to secure your spot
-                  </p>
-
-                  <form onSubmit={handleRegister} className="registration-form">
-                  {fields.length > 0 ? (
-                    <div className="registration-fields">
-                      {fields.map(field => (
-                        <div key={field.id} className="registration-field-group">
-                          <label className="registration-field-label">
-                            {field.field_name}
-                            {field.is_required && <span className="required-star">*</span>}
-                          </label>
-                          <input
-                            type={field.field_type}
-                            required={field.is_required}
-                            placeholder={`Enter ${field.field_name.toLowerCase()}`}
-                            className="registration-field-input"
-                            pattern={
-                              field.field_name.toLowerCase().includes('mobile') || 
-                              field.field_name.toLowerCase().includes('phone') ||
-                              field.field_name.toLowerCase().includes('roll') ||
-                              field.field_name.toLowerCase().includes('number')
-                              ? '[0-9]+' 
-                              : undefined
-                            }
-                            title={
-                              field.field_name.toLowerCase().includes('mobile') || 
-                              field.field_name.toLowerCase().includes('phone') ||
-                              field.field_name.toLowerCase().includes('roll') ||
-                              field.field_name.toLowerCase().includes('number')
-                              ? 'Please enter numbers only' 
-                              : undefined
-                            }
-                            onChange={e => {
-                              const value = e.target.value;
-                              setResponses(prev => {
-                                const filtered = prev.filter(r => r.field_id !== field.id);
-                                return [...filtered, { field_id: field.id, response_value: value }];
-                              });
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="no-fields-message">
-                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M9 11l3 3L22 4" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" strokeLinecap="round"/>
-                      </svg>
-                      <p>No additional information required</p>
-                      <span>Click register to confirm your participation</span>
-                    </div>
-                  )}
-
-                  <button 
-                    type="submit" 
-                    disabled={loading}
-                    className="registration-submit-btn"
-                  >
-                    {loading ? (
-                      <>
-                        <div className="btn-spinner"></div>
-                        Registering...
-                      </>
-                    ) : (
-                      <>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M9 11l3 3L22 4" strokeLinecap="round" strokeLinejoin="round"/>
-                          <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" strokeLinecap="round"/>
-                        </svg>
-                        Register Now
-                      </>
-                    )}
-                  </button>
-                </form>
-                </>
-              )
+                ))}
+              </div>
             ) : (
-              <div className="registration-login-required">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" strokeLinecap="round"/>
-                  <path d="M7 11V7a5 5 0 0110 0v4" strokeLinecap="round"/>
+              <div className="no-participants">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="9" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <h3>Login Required</h3>
-                <p>Please sign in to register for this event</p>
-                <button onClick={() => navigate('/login')} className="login-required-btn">
-                  Sign In
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </button>
+                <p>No participants yet</p>
+                <span>Participants will appear here once they register</span>
               </div>
             )}
           </div>
-        </div>
+        )}
       </div>
+      
+      {/* Registration Modal */}
+      {showRegistrationModal && (
+        <div className="registration-modal-overlay" onClick={() => setShowRegistrationModal(false)}>
+          <div className="registration-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button 
+              className="registration-modal-close" 
+              onClick={() => setShowRegistrationModal(false)}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            
+            <div className="registration-modal-header">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 11l3 3L22 4" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" strokeLinecap="round"/>
+              </svg>
+              <h2>Register for Event</h2>
+              <p>Fill in the details below to secure your spot</p>
+            </div>
+
+            <form onSubmit={handleRegister} className="registration-modal-form">
+              {fields.length > 0 ? (
+                <div className="registration-modal-fields">
+                  {fields.map(field => (
+                    <div key={field.id} className="registration-modal-field-group">
+                      <label className="registration-modal-field-label">
+                        {field.field_name}
+                        {field.is_required && <span className="required-star">*</span>}
+                      </label>
+                      <input
+                        type={field.field_type}
+                        required={field.is_required}
+                        placeholder={`Enter ${field.field_name.toLowerCase()}`}
+                        className="registration-modal-field-input"
+                        pattern={
+                          field.field_name.toLowerCase().includes('mobile') || 
+                          field.field_name.toLowerCase().includes('phone') ||
+                          field.field_name.toLowerCase().includes('roll') ||
+                          field.field_name.toLowerCase().includes('number')
+                          ? '[0-9]+' 
+                          : undefined
+                        }
+                        title={
+                          field.field_name.toLowerCase().includes('mobile') || 
+                          field.field_name.toLowerCase().includes('phone') ||
+                          field.field_name.toLowerCase().includes('roll') ||
+                          field.field_name.toLowerCase().includes('number')
+                          ? 'Please enter numbers only' 
+                          : undefined
+                        }
+                        onChange={e => {
+                          const value = e.target.value;
+                          setResponses(prev => {
+                            const filtered = prev.filter(r => r.field_id !== field.id);
+                            return [...filtered, { field_id: field.id, response_value: value }];
+                          });
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="no-fields-message-modal">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M9 11l3 3L22 4" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" strokeLinecap="round"/>
+                  </svg>
+                  <p>No additional information required</p>
+                  <span>Click register to confirm your participation</span>
+                </div>
+              )}
+
+              <div className="registration-modal-actions">
+                <button 
+                  type="button"
+                  onClick={() => setShowRegistrationModal(false)}
+                  className="registration-modal-cancel-btn"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={loading}
+                  className="registration-modal-submit-btn"
+                >
+                  {loading ? (
+                    <>
+                      <div className="btn-spinner"></div>
+                      Registering...
+                    </>
+                  ) : (
+                    <>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 11l3 3L22 4" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" strokeLinecap="round"/>
+                      </svg>
+                      Register Now
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       
       {/* Poster Modal */}
       {showPosterModal && (
