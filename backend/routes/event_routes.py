@@ -35,8 +35,19 @@ def list_events():
         result.append({
             'id': event.id,
             'title': event.title,
+            'description': event.description,
+            'poster_url': event.poster_url,
             'date': event.date,
+            'deadline': event.deadline,
+            'prizes': event.prizes,
+            'eligibility': event.eligibility,
+            'category': event.category,
+            'mode': event.mode,
+            'venue': event.venue,
+            'participation_type': event.participation_type,
+            'team_size': event.team_size,
             'organiser_name': organiser.name if organiser else None,
+            'organiser_id': event.organiser_id,
             'registration_count': registration_count
         })
     return jsonify({'events': result}), 200
