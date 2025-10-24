@@ -465,19 +465,45 @@ const EventDetails = () => {
             <button 
               className="poster-modal-close" 
               onClick={() => setShowPosterModal(false)}
+              aria-label="Close modal"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </button>
-            <img 
-              src={event.poster_url || `https://via.placeholder.com/800x450/0A21C0/FFFFFF?text=${encodeURIComponent(event.title)}`}
-              alt={event.title}
-              className="poster-modal-image"
-              onError={(e) => {
-                e.target.src = `https://via.placeholder.com/800x450/0A21C0/FFFFFF?text=${encodeURIComponent(event.title)}`;
-              }}
-            />
+            
+            {event.poster_url ? (
+              <img 
+                src={event.poster_url}
+                alt={event.title}
+                className="poster-modal-image"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextElementSibling.style.display = 'flex';
+                }}
+              />
+            ) : (
+              <div className="no-poster-message">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <path d="M21 15l-5-5L5 21"/>
+                </svg>
+                <p>No Poster Available</p>
+                <span>This event doesn't have a poster image</span>
+              </div>
+            )}
+            
+            <div className="no-poster-fallback" style={{ display: 'none' }}>
+              <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <path d="M21 15l-5-5L5 21"/>
+              </svg>
+              <p>No Poster Available</p>
+              <span>Failed to load the poster image</span>
+            </div>
+            
             <div className="poster-modal-title">{event.title}</div>
           </div>
         </div>

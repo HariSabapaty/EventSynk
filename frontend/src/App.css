@@ -853,25 +853,35 @@ input.error-input, textarea.error-input, select.error-input {
 
 .poster-modal-close {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 40px;
-  height: 40px;
-  background: rgba(0, 0, 0, 0.6);
+  top: -0.75rem;
+  right: -0.75rem;
+  width: 44px;
+  height: 44px;
+  background: rgba(239, 68, 68, 0.95);
   color: white;
-  border: none;
+  border: 3px solid white;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
-  z-index: 1;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.poster-modal-close svg {
+  width: 22px;
+  height: 22px;
+  stroke: white;
+  stroke-width: 2.5;
+  flex-shrink: 0;
 }
 
 .poster-modal-close:hover {
-  background: rgba(0, 0, 0, 0.8);
-  transform: rotate(90deg);
+  background: rgba(220, 38, 38, 0.95);
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
 }
 
 .poster-modal-image {
@@ -882,6 +892,42 @@ input.error-input, textarea.error-input, select.error-input {
   display: block;
   border-radius: 8px;
   object-fit: contain;
+}
+
+/* No Poster Message */
+.no-poster-message,
+.no-poster-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  min-height: 400px;
+  background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+  border-radius: 12px;
+  border: 2px dashed #D1D5DB;
+}
+
+.no-poster-message svg,
+.no-poster-fallback svg {
+  color: #9CA3AF;
+  margin-bottom: 1.5rem;
+  opacity: 0.6;
+}
+
+.no-poster-message p,
+.no-poster-fallback p {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #374151;
+  margin: 0 0 0.5rem 0;
+}
+
+.no-poster-message span,
+.no-poster-fallback span {
+  font-size: 1rem;
+  color: #6B7280;
+  margin: 0;
 }
 
 .poster-modal-title {
@@ -1717,6 +1763,40 @@ input.error-input, textarea.error-input, select.error-input {
 
   .poster-modal-image {
     max-height: calc(95vh - 5rem);
+  }
+
+  .poster-modal-close {
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 40px;
+    height: 40px;
+  }
+
+  .poster-modal-close svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .no-poster-message,
+  .no-poster-fallback {
+    padding: 3rem 1.5rem;
+    min-height: 300px;
+  }
+
+  .no-poster-message svg,
+  .no-poster-fallback svg {
+    width: 60px;
+    height: 60px;
+  }
+
+  .no-poster-message p,
+  .no-poster-fallback p {
+    font-size: 1.25rem;
+  }
+
+  .no-poster-message span,
+  .no-poster-fallback span {
+    font-size: 0.875rem;
   }
 
   .view-poster-btn,
