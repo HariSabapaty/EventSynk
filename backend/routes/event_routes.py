@@ -196,6 +196,7 @@ def get_event(event_id):
         'participation_type': event.participation_type,
         'team_size': event.team_size,
         'organiser': organiser.name if organiser else None,
+        'organiser_email': organiser.email if organiser else None,
         'organiser_id': event.organiser_id,
         'registration_count': registration_count,
         'fields': field_defs

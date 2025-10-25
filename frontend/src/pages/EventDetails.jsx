@@ -149,7 +149,15 @@ const EventDetails = () => {
                 <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" strokeLinecap="round" strokeLinejoin="round"/>
                 <circle cx="12" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <span>Organized by <strong>{event.organiser}</strong></span>
+              <span>
+                Organized by{' '}
+                <strong 
+                  className="organizer-name-tooltip" 
+                  title={event.organiser_email || 'Email not available'}
+                >
+                  {event.organiser}
+                </strong>
+              </span>
             </div>
           </div>
 

@@ -762,6 +762,21 @@ input.error-input, textarea.error-input, select.error-input {
   color: #141619;
 }
 
+.organizer-name-tooltip {
+  cursor: help;
+  position: relative;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: #0A21C0;
+  text-underline-offset: 3px;
+  transition: all 0.2s ease;
+}
+
+.organizer-name-tooltip:hover {
+  color: #0A21C0;
+  text-decoration-style: solid;
+}
+
 .event-poster-container {
   margin: 2rem 0;
   border-radius: 12px;
@@ -942,7 +957,7 @@ input.error-input, textarea.error-input, select.error-input {
 .event-action-buttons {
   display: flex;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
   flex-wrap: wrap;
 }
 
@@ -1170,7 +1185,18 @@ input.error-input, textarea.error-input, select.error-input {
 }
 
 .event-details-section {
-  margin: 2.5rem 0;
+  margin: 1rem 0 2.5rem 0;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+}
+
+.event-details-section:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: rgba(10, 33, 192, 0.2);
 }
 
 .event-section-title {
@@ -1178,6 +1204,8 @@ input.error-input, textarea.error-input, select.error-input {
   font-weight: 600;
   color: #141619;
   margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #E5E7EB;
 }
 
 .event-description {
