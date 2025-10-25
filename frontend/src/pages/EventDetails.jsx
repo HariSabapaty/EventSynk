@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 import { AuthContext } from '../context/AuthContext';
 import ToastNotification from '../components/ToastNotification';
+import * as XLSX from 'xlsx';
 
 const EventDetails = () => {
   const { id } = useParams();
@@ -62,6 +63,46 @@ const EventDetails = () => {
         });
     }
   }, [user, event, id]);
+
+  const exportToExcel = () => {
+    if (participants.length === 0) {
+      setMessage('No participants to export');
+      setMessageType('info');
+      return;
+    }
+
+    // Prepare data for Excel
+    const excelData = participants.map((participant, index) => {
+      const row = {
+        'S.No': index + 1,
+        'Name': participant.name,
+        'Email': participant.email,
+      };
+
+      // Add custom fields
+      if (participant.fields && participant.fields.length > 0) {
+        participant.fields.forEach(field => {
+          row[field.field_name] = field.response_value;
+        });
+      }
+
+      return row;
+    });
+
+    // Create worksheet and workbook
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Participants');
+
+    // Generate filename with event title and date
+    const filename = `${event.title.replace(/[^a-z0-9]/gi, '_')}_Participants_${new Date().toISOString().split('T')[0]}.xlsx`;
+
+    // Download file
+    XLSX.writeFile(workbook, filename);
+
+    setMessage('Participant list exported successfully!');
+    setMessageType('success');
+  };
 
   const handleRegister = async e => {
     e.preventDefault();
@@ -299,6 +340,16 @@ const EventDetails = () => {
           <div className="participants-section-fullwidth">
             <div className="participants-header">
               <h3>Registered Participants ({participants.length})</h3>
+              {participants.length > 0 && (
+                <button onClick={exportToExcel} className="export-excel-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" strokeLinecap="round" strokeLinejoin="round"/>
+                    <polyline points="7 10 12 15 17 10" strokeLinecap="round" strokeLinejoin="round"/>
+                    <line x1="12" y1="15" x2="12" y2="3" strokeLinecap="round"/>
+                  </svg>
+                  Export to Excel
+                </button>
+              )}
             </div>
             
             {loadingParticipants ? (
@@ -307,33 +358,39 @@ const EventDetails = () => {
                 <span>Loading participants...</span>
               </div>
             ) : participants.length > 0 ? (
-              <div className="participants-list">
-                {participants.map((participant, index) => (
-                  <div key={index} className="participant-card">
-                    <div className="participant-header">
-                      <div className="participant-avatar">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" strokeLinecap="round" strokeLinejoin="round"/>
-                          <circle cx="12" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </div>
-                      <div className="participant-info">
-                        <h4>{participant.name}</h4>
-                        <p>{participant.email}</p>
-                      </div>
-                    </div>
-                    {participant.fields && participant.fields.length > 0 && (
-                      <div className="participant-fields">
-                        {participant.fields.map((field, fieldIndex) => (
-                          <div key={fieldIndex} className="participant-field">
-                            <span className="field-label">{field.field_name}:</span>
-                            <span className="field-value">{field.response_value}</span>
+              <div className="participants-table-container">
+                <table className="participants-table">
+                  <thead>
+                    <tr>
+                      <th>S.No</th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      {participants[0]?.fields && participants[0].fields.map((field, idx) => (
+                        <th key={idx}>{field.field_name}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {participants.map((participant, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td className="participant-name-cell">
+                          <div className="participant-name-wrapper">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" strokeLinecap="round" strokeLinejoin="round"/>
+                              <circle cx="12" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                            {participant.name}
                           </div>
+                        </td>
+                        <td>{participant.email}</td>
+                        {participant.fields && participant.fields.map((field, fieldIdx) => (
+                          <td key={fieldIdx}>{field.response_value}</td>
                         ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             ) : (
               <div className="no-participants">

@@ -1533,6 +1533,11 @@ input.error-input, textarea.error-input, select.error-input {
 
 .participants-header {
   margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .participants-header h3 {
@@ -1542,6 +1547,37 @@ input.error-input, textarea.error-input, select.error-input {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin: 0;
+}
+
+.export-excel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: linear-gradient(135deg, #217346 0%, #2d9f5f 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(33, 115, 70, 0.2);
+}
+
+.export-excel-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 115, 70, 0.3);
+  background: linear-gradient(135deg, #1a5a37 0%, #258c52 100%);
+}
+
+.export-excel-btn:active {
+  transform: translateY(0);
+}
+
+.export-excel-btn svg {
+  flex-shrink: 0;
 }
 
 .participants-loading {
@@ -1651,6 +1687,118 @@ input.error-input, textarea.error-input, select.error-input {
 .field-value {
   color: #666;
   word-break: break-word;
+}
+
+/* ===== Participants Table Styles ===== */
+.participants-table-container {
+  width: 100%;
+  overflow-x: auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #E8E8E8;
+}
+
+.participants-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.participants-table thead {
+  background: linear-gradient(135deg, #0A21C0 0%, #1a3fd6 100%);
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.participants-table thead tr {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.participants-table th {
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.participants-table th:first-child {
+  border-top-left-radius: 12px;
+  width: 60px;
+  text-align: center;
+}
+
+.participants-table th:last-child {
+  border-top-right-radius: 12px;
+}
+
+.participants-table tbody tr {
+  border-bottom: 1px solid #E8E8E8;
+  transition: all 0.2s ease;
+}
+
+.participants-table tbody tr:hover {
+  background-color: #F8F9FB;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.participants-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.participants-table td {
+  padding: 1rem 1.25rem;
+  color: #374151;
+  vertical-align: middle;
+}
+
+.participants-table td:first-child {
+  text-align: center;
+  font-weight: 600;
+  color: #6B7280;
+  font-size: 0.875rem;
+}
+
+.participant-name-cell {
+  font-weight: 600;
+  color: #141619;
+}
+
+.participant-name-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.participant-name-wrapper svg {
+  color: #0A21C0;
+  flex-shrink: 0;
+}
+
+/* Responsive table */
+@media (max-width: 768px) {
+  .participants-table-container {
+    border-radius: 8px;
+  }
+  
+  .participants-table {
+    font-size: 0.875rem;
+  }
+  
+  .participants-table th,
+  .participants-table td {
+    padding: 0.75rem 1rem;
+  }
+  
+  .export-excel-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .no-participants {
