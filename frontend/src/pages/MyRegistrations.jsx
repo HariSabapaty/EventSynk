@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 const MyRegistrations = () => {
   const { user } = useContext(AuthContext);
-  const [registrations, setRegistrations] = useState([]);
+  const [, setRegistrations] = useState([]);
   const [fullEvents, setFullEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -59,7 +59,7 @@ const MyRegistrations = () => {
         {/* Page Header */}
         <div className="page-header">
           <h1>My Registrations</h1>
-          <p>Events you've registered for</p>
+          <p>Events you&apos;ve registered for</p>
         </div>
 
         {/* Search Bar */}
@@ -114,7 +114,7 @@ const MyRegistrations = () => {
               </svg>
             </div>
             <h3>No registrations yet</h3>
-            <p>You haven't registered for any events yet. Browse events and join one!</p>
+            <p>You haven&apos;t registered for any events yet. Browse events and join one!</p>
             <Link to="/events">
               <button className="btn-primary">Explore Events</button>
             </Link>

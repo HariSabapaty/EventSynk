@@ -331,7 +331,7 @@ const AllEvents = () => {
             <div className="active-filters-chips">
               {searchQuery && (
                 <div className="filter-chip">
-                  <span>🔍 "{searchQuery}"</span>
+                  <span>🔍 &quot;{searchQuery}&quot;</span>
                   <button onClick={() => setSearchQuery('')}>×</button>
                 </div>
               )}

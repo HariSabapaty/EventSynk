@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
-import EventCard from '../components/EventCard';
 import HeroSection from '../components/HeroSection';
 import FeaturedEvents from '../components/FeaturedEvents';
 import PlatformFeatures from '../components/PlatformFeatures';

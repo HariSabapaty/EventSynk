@@ -555,7 +555,7 @@ const EventDetails = () => {
                   <path d="M21 15l-5-5L5 21"/>
                 </svg>
                 <p>No Poster Available</p>
-                <span>This event doesn't have a poster image</span>
+                <span>This event doesn&apos;t have a poster image</span>
               </div>
             )}
             

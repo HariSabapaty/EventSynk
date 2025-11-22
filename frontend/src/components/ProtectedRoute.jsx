@@ -3,7 +3,7 @@ import { AuthContext } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }) => {
-  const { user, loading, isSignedIn } = useContext(AuthContext);
+  const { loading, isSignedIn } = useContext(AuthContext);
   
   if (loading) {
     return (

@@ -66,7 +66,7 @@ const FeaturedEvents = ({ events }) => {
       <div className="featured-container">
         <div className="featured-header">
           <h2 className="featured-title">
-            Discover What's Happening at SSN
+            Discover What&apos;s Happening at SSN
           </h2>
           <p className="featured-subtitle">
             Explore the most exciting events on campus
