@@ -30,6 +30,28 @@ jobs:
         cd backend
         python -m py_compile *.py
 
+    - name: Lint Python code with flake8
+      run: |
+        cd backend
+        pip install flake8
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+    - name: Check Python code formatting with black
+      run: |
+        cd backend
+        pip install black
+        black --check --diff .
+      continue-on-error: true
+
+    - name: Security scan with bandit
+      run: |
+        cd backend
+        pip install bandit
+        bandit -r . -f json -o bandit-report.json || true
+        bandit -r . -ll
+      continue-on-error: true
+
     # Frontend
     - name: Set up Node.js
       uses: actions/setup-node@v3
@@ -41,10 +63,29 @@ jobs:
         cd frontend
         npm install
 
+    - name: Lint frontend code with ESLint
+      run: |
+        cd frontend
+        npm install eslint --save-dev
+        npx eslint src --ext .js,.jsx || true
+      continue-on-error: true
+
+    - name: Check frontend code formatting
+      run: |
+        cd frontend
+        npm install prettier --save-dev
+        npx prettier --check "src/**/*.{js,jsx}" || true
+      continue-on-error: true
+
     - name: Build frontend
       run: |
         cd frontend
         npm run build
+
+    - name: Check bundle size
+      run: |
+        cd frontend/dist
+        du -sh . || echo "Bundle created"
 
     - name: Success
       run: echo "✅ Build completed successfully!"
