@@ -20,9 +20,28 @@ app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = config.SQLALCHEMY_TRACK_MODIFICATIONS
 app.config['MAX_CONTENT_LENGTH'] = config.MAX_CONTENT_LENGTH
 
+# Email Configuration
+app.config['MAIL_SERVER'] = config.MAIL_SERVER
+app.config['MAIL_PORT'] = config.MAIL_PORT
+app.config['MAIL_USE_TLS'] = config.MAIL_USE_TLS
+app.config['MAIL_USE_SSL'] = config.MAIL_USE_SSL
+app.config['MAIL_USERNAME'] = config.MAIL_USERNAME
+app.config['MAIL_PASSWORD'] = config.MAIL_PASSWORD
+app.config['MAIL_DEFAULT_SENDER'] = config.MAIL_DEFAULT_SENDER
+
 # Initialize ImageUploadManager singleton
 image_manager = ImageUploadManager.get_instance()
 image_manager.set_api_key(config.IMGBB_API_KEY)
+
+# Initialize Email Service (Singleton)
+from utils.email_service import EmailService
+email_service = EmailService.get_instance()
+email_service.init_app(app)
+
+# Initialize Participant Notification Manager (Observer Pattern)
+from utils.participant_notifier import EventNotificationManager, EmailParticipantNotifier
+notification_manager = EventNotificationManager.get_instance()
+notification_manager.attach_observer(EmailParticipantNotifier())
 
 # Disable automatic trailing slash redirects
 app.url_map.strict_slashes = False

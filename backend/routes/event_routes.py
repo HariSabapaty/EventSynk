@@ -2,12 +2,14 @@ from flask import Blueprint, request, jsonify, make_response, current_app
 from models import db, Event, User, Registration, RegistrationField, RegistrationFieldResponse
 from utils.clerk_auth import clerk_token_required
 from utils.image_upload_manager import ImageUploadManager
+from utils.participant_notifier import EventNotificationManager
 from datetime import datetime
 
 event_routes = Blueprint('event_routes', __name__)
 
-# Get ImageUploadManager singleton instance
+# Get singleton instances
 image_manager = ImageUploadManager.get_instance()
+notification_manager = EventNotificationManager.get_instance()
 
 @event_routes.errorhandler(400)
 def bad_request(error):
@@ -238,6 +240,19 @@ def update_event(clerk_user_id, event_id):
         if deadline_date >= event_date:
             return jsonify({'message': 'Registration deadline must be before the event date.'}), 400
     db.session.commit()
+    
+    # Notify registered participants about event update (Observer Pattern)
+    notification_manager.notify_registered_users(
+        event_type='event_updated',
+        event_data={
+            'event_id': event.id,
+            'event_title': event.title,
+            'organiser_name': user.name,
+            'updated_fields': list(data.keys())
+        },
+        event_id=event_id
+    )
+    
     return jsonify({'message': 'Event updated successfully.'}), 200
 
 # Delete event
@@ -253,6 +268,18 @@ def delete_event(clerk_user_id, event_id):
         return jsonify({'message': 'Event not found.'}), 404
     if event.organiser_id != user.id:
         return jsonify({'message': 'Forbidden: Only organiser can delete.'}), 403
+    
+    # Notify registered participants before deletion (Observer Pattern)
+    notification_manager.notify_registered_users(
+        event_type='event_cancelled',
+        event_data={
+            'event_id': event.id,
+            'event_title': event.title,
+            'organiser_name': user.name
+        },
+        event_id=event_id
+    )
+    
     db.session.delete(event)
     db.session.commit()
     return jsonify({'message': 'Event deleted successfully.'}), 200
