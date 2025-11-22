@@ -16,21 +16,25 @@ const AuthProvider = ({ children }) => {
         try {
           // Get Clerk session token
           const token = await getToken();
-          
+
           // Sync user with backend
-          const response = await axiosInstance.post('/auth/sync-user', {
-            clerk_user_id: clerkUser.id,
-            email: clerkUser.primaryEmailAddress?.emailAddress,
-            name: clerkUser.fullName || clerkUser.firstName || 'User',
-            avatar_url: clerkUser.imageUrl
-          }, {
-            headers: {
-              'Authorization': `Bearer ${token}`
+          const response = await axiosInstance.post(
+            '/auth/sync-user',
+            {
+              clerk_user_id: clerkUser.id,
+              email: clerkUser.primaryEmailAddress?.emailAddress,
+              name: clerkUser.fullName || clerkUser.firstName || 'User',
+              avatar_url: clerkUser.imageUrl,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
             }
-          });
-          
+          );
+
           setUser(response.data.user);
-          
+
           // Store token for API calls
           localStorage.setItem('clerk_token', token);
         } catch (error) {
@@ -53,13 +57,15 @@ const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      loading, 
-      logout,
-      clerkUser,
-      isSignedIn 
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        logout,
+        clerkUser,
+        isSignedIn,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

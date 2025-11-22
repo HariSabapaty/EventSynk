@@ -6,14 +6,14 @@ const axiosInstance = axios.create({
 
 // Add Clerk token to requests
 axiosInstance.interceptors.request.use(
-  async (config) => {
+  async config => {
     const token = localStorage.getItem('clerk_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  error => Promise.reject(error)
 );
 
 // Centralized error handling

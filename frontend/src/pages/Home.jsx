@@ -11,7 +11,8 @@ const Home = () => {
 
   useEffect(() => {
     setLoading(true);
-    axiosInstance.get('/events')
+    axiosInstance
+      .get('/events')
       .then(res => {
         setEvents(res.data.events);
         setLoading(false);
@@ -25,12 +26,10 @@ const Home = () => {
   return (
     <div className="home-page">
       <HeroSection />
-      
+
       {/* Featured Events Section */}
-      {!loading && events.length > 0 && (
-        <FeaturedEvents events={events} />
-      )}
-      
+      {!loading && events.length > 0 && <FeaturedEvents events={events} />}
+
       {/* Platform Features Section */}
       <PlatformFeatures />
 

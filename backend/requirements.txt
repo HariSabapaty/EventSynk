@@ -8,6 +8,8 @@ colorama==0.4.6
 cryptography==46.0.3
 Flask==3.1.2
 flask-cors==6.0.1
+pre-commit==3.6.0
+ruff==0.1.9
 Flask-Migrate==4.1.0
 Flask-RESTful==0.3.10
 Flask-SQLAlchemy==3.1.1

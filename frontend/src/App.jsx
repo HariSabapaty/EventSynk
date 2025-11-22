@@ -24,9 +24,30 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/events" element={<AllEvents />} />
           <Route path="/events/:id" element={<EventDetails />} />
-          <Route path="/create" element={<ProtectedRoute><CreateEvent /></ProtectedRoute>} />
-          <Route path="/my-events" element={<ProtectedRoute><MyEvents /></ProtectedRoute>} />
-          <Route path="/my-registrations" element={<ProtectedRoute><MyRegistrations /></ProtectedRoute>} />
+          <Route
+            path="/create"
+            element={
+              <ProtectedRoute>
+                <CreateEvent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-events"
+            element={
+              <ProtectedRoute>
+                <MyEvents />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-registrations"
+            element={
+              <ProtectedRoute>
+                <MyRegistrations />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
         <Footer />
       </Router>

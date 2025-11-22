@@ -1,0 +1,46 @@
+repos:
+  # Python linting with Ruff (using local installation)
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check
+        entry: ruff check --fix
+        language: system
+        types: [python]
+        files: ^backend/
+        pass_filenames: true
+      
+      - id: ruff-format
+        name: ruff format
+        entry: ruff format
+        language: system
+        types: [python]
+        files: ^backend/
+        pass_filenames: true
+
+  # JavaScript/React linting and formatting (using local npm)
+  - repo: local
+    hooks:
+      - id: eslint
+        name: eslint
+        entry: bash -c 'cd frontend && npm run lint'
+        language: system
+        files: ^frontend/src/.*\.[jt]sx?$
+        pass_filenames: false
+      
+      - id: prettier
+        name: prettier
+        entry: bash -c 'cd frontend && npm run format'
+        language: system
+        files: ^frontend/.*\.(js|jsx|json|css)$
+        pass_filenames: false
+
+  # General file checks (using local/system tools to avoid virtualenv issues)
+  - repo: local
+    hooks:
+      - id: check-added-large-files
+        name: check for large files
+        entry: bash -c 'git diff --cached --name-only --diff-filter=ACM | xargs -I {} du -h {} | awk "\$1 ~ /M$/ && \$1+0 > 1 {print; exit 1}"'
+        language: system
+        pass_filenames: false
+        always_run: true

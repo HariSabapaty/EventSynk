@@ -18,41 +18,33 @@ const CallToAction = () => {
     <section className="cta-section">
       <div className="cta-container">
         <div className="cta-content">
-          <h2 className="cta-headline">
-            Ready to host your next SSN college event?
-          </h2>
+          <h2 className="cta-headline">Ready to host your next SSN college event?</h2>
           <p className="cta-subtext">
             Join EventSynk and make your event a success with seamless registration and management.
           </p>
-          <button 
-            className="cta-button"
-            onClick={handleGetStarted}
-          >
+          <button className="cta-button" onClick={handleGetStarted}>
             <span>Get Started</span>
-            <svg 
-              className="cta-button-icon" 
-              width="20" 
-              height="20" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              className="cta-button-icon"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M13 7l5 5m0 0l-5 5m5-5H6" 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 7l5 5m0 0l-5 5m5-5H6"
               />
             </svg>
           </button>
-          
+
           {!user && (
             <p className="cta-login-text">
               Already have an account?{' '}
-              <button 
-                className="cta-login-link"
-                onClick={() => navigate('/login')}
-              >
+              <button className="cta-login-link" onClick={() => navigate('/login')}>
                 Log in
               </button>
             </p>

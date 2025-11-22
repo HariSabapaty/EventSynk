@@ -16,7 +16,8 @@ const AllEvents = () => {
 
   useEffect(() => {
     setLoading(true);
-    axiosInstance.get('/events')
+    axiosInstance
+      .get('/events')
       .then(res => {
         setEvents(res.data.events);
         setLoading(false);
@@ -30,20 +31,23 @@ const AllEvents = () => {
   // Get unique categories, modes, and participation types
   const categories = ['All', ...new Set(events.map(e => e.category).filter(Boolean))];
   const modes = ['All', ...new Set(events.map(e => e.mode).filter(Boolean))];
-  const participationTypes = ['All', ...new Set(events.map(e => e.participation_type).filter(Boolean))];
+  const participationTypes = [
+    'All',
+    ...new Set(events.map(e => e.participation_type).filter(Boolean)),
+  ];
 
   // Helper function to check if registration is open
-  const isRegistrationOpen = (event) => {
+  const isRegistrationOpen = event => {
     const now = new Date();
     const deadline = new Date(event.deadline);
     const eventDate = new Date(event.date);
-    
+
     // Registration is open if deadline hasn't passed (and event hasn't occurred)
     const isOpen = deadline > now && eventDate > now;
-    
+
     // Debug: uncomment to see what's happening
     // console.log(`Event: ${event.title}, Deadline: ${deadline}, Now: ${now}, IsOpen: ${isOpen}`);
-    
+
     return isOpen;
   };
 
@@ -51,8 +55,8 @@ const AllEvents = () => {
   const isInDateRange = (event, range) => {
     const now = new Date();
     const eventDate = new Date(event.date);
-    
-    switch(range) {
+
+    switch (range) {
       case 'All':
         return true;
       case 'Today':
@@ -63,9 +67,11 @@ const AllEvents = () => {
         return eventDate >= now && eventDate <= weekFromNow;
       }
       case 'This Month': {
-        return eventDate.getMonth() === now.getMonth() && 
-               eventDate.getFullYear() === now.getFullYear() &&
-               eventDate >= now;
+        return (
+          eventDate.getMonth() === now.getMonth() &&
+          eventDate.getFullYear() === now.getFullYear() &&
+          eventDate >= now
+        );
       }
       case 'Upcoming':
         return eventDate > now;
@@ -76,29 +82,39 @@ const AllEvents = () => {
 
   // Filter events based on all criteria
   const filteredEvents = events.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         (event.organiser_name && event.organiser_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                         (event.description && event.description.toLowerCase().includes(searchQuery.toLowerCase()));
-    
+    const matchesSearch =
+      event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (event.organiser_name &&
+        event.organiser_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (event.description && event.description.toLowerCase().includes(searchQuery.toLowerCase()));
+
     const matchesCategory = categoryFilter === 'All' || event.category === categoryFilter;
-    
+
     const matchesMode = modeFilter === 'All' || event.mode === modeFilter;
-    
-    const matchesParticipation = participationFilter === 'All' || event.participation_type === participationFilter;
-    
-    const matchesRegistration = registrationStatus === 'All' || 
-                               (registrationStatus === 'Closed' && isRegistrationOpen(event)) ||
-                               (registrationStatus === 'Open' && !isRegistrationOpen(event));
-    
+
+    const matchesParticipation =
+      participationFilter === 'All' || event.participation_type === participationFilter;
+
+    const matchesRegistration =
+      registrationStatus === 'All' ||
+      (registrationStatus === 'Closed' && isRegistrationOpen(event)) ||
+      (registrationStatus === 'Open' && !isRegistrationOpen(event));
+
     const matchesDateRange = isInDateRange(event, dateRange);
-    
-    return matchesSearch && matchesCategory && matchesMode && matchesParticipation && 
-           matchesRegistration && matchesDateRange;
+
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesMode &&
+      matchesParticipation &&
+      matchesRegistration &&
+      matchesDateRange
+    );
   });
 
   // Sort filtered events
   const sortedEvents = [...filteredEvents].sort((a, b) => {
-    switch(sortBy) {
+    switch (sortBy) {
       case 'event-date-asc':
         return new Date(a.date) - new Date(b.date);
       case 'event-date-desc':
@@ -131,7 +147,7 @@ const AllEvents = () => {
     participationFilter !== 'All',
     registrationStatus !== 'All',
     dateRange !== 'All',
-    searchQuery !== ''
+    searchQuery !== '',
   ].filter(Boolean).length;
 
   // Clear all filters
@@ -160,25 +176,39 @@ const AllEvents = () => {
           <div className="filters-top-row">
             {/* Search Bar */}
             <div className="search-bar">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" strokeLinecap="round"/>
-                <path d="M21 21l-4.35-4.35" strokeLinecap="round"/>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <circle cx="11" cy="11" r="8" strokeLinecap="round" />
+                <path d="M21 21l-4.35-4.35" strokeLinecap="round" />
               </svg>
               <input
                 type="text"
                 placeholder="Search events by title, organizer, or description..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
                 className="search-input"
               />
               {searchQuery && (
-                <button 
+                <button
                   className="search-clear"
                   onClick={() => setSearchQuery('')}
                   aria-label="Clear search"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round"/>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
                   </svg>
                 </button>
               )}
@@ -187,15 +217,22 @@ const AllEvents = () => {
             {/* Sort Dropdown */}
             <div className="sort-dropdown">
               <label htmlFor="sort-select">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 6h18M3 12h12M3 18h6" strokeLinecap="round"/>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M3 6h18M3 12h12M3 18h6" strokeLinecap="round" />
                 </svg>
                 Sort by:
               </label>
-              <select 
+              <select
                 id="sort-select"
-                value={sortBy} 
-                onChange={(e) => setSortBy(e.target.value)}
+                value={sortBy}
+                onChange={e => setSortBy(e.target.value)}
                 className="sort-select"
               >
                 <option value="event-date-asc">Event Date: Earliest First</option>
@@ -212,17 +249,26 @@ const AllEvents = () => {
             </div>
 
             {/* Filter Toggle Button */}
-            <button 
+            <button
               className={`filter-toggle-btn ${showFilters ? 'active' : ''}`}
               onClick={() => setShowFilters(!showFilters)}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
               Filters
-              {activeFiltersCount > 0 && (
-                <span className="filter-badge">{activeFiltersCount}</span>
-              )}
+              {activeFiltersCount > 0 && <span className="filter-badge">{activeFiltersCount}</span>}
             </button>
           </div>
 
@@ -234,13 +280,15 @@ const AllEvents = () => {
                 {categories.length > 1 && (
                   <div className="filter-group">
                     <label className="filter-label">Category</label>
-                    <select 
-                      value={categoryFilter} 
-                      onChange={(e) => setCategoryFilter(e.target.value)}
+                    <select
+                      value={categoryFilter}
+                      onChange={e => setCategoryFilter(e.target.value)}
                       className="filter-select"
                     >
                       {categories.map(category => (
-                        <option key={category} value={category}>{category}</option>
+                        <option key={category} value={category}>
+                          {category}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -250,13 +298,15 @@ const AllEvents = () => {
                 {modes.length > 1 && (
                   <div className="filter-group">
                     <label className="filter-label">Mode</label>
-                    <select 
-                      value={modeFilter} 
-                      onChange={(e) => setModeFilter(e.target.value)}
+                    <select
+                      value={modeFilter}
+                      onChange={e => setModeFilter(e.target.value)}
                       className="filter-select"
                     >
                       {modes.map(mode => (
-                        <option key={mode} value={mode}>{mode}</option>
+                        <option key={mode} value={mode}>
+                          {mode}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -266,13 +316,15 @@ const AllEvents = () => {
                 {participationTypes.length > 1 && (
                   <div className="filter-group">
                     <label className="filter-label">Participation</label>
-                    <select 
-                      value={participationFilter} 
-                      onChange={(e) => setParticipationFilter(e.target.value)}
+                    <select
+                      value={participationFilter}
+                      onChange={e => setParticipationFilter(e.target.value)}
                       className="filter-select"
                     >
                       {participationTypes.map(type => (
-                        <option key={type} value={type}>{type}</option>
+                        <option key={type} value={type}>
+                          {type}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -281,9 +333,9 @@ const AllEvents = () => {
                 {/* Registration Status Filter */}
                 <div className="filter-group">
                   <label className="filter-label">Registration</label>
-                  <select 
-                    value={registrationStatus} 
-                    onChange={(e) => setRegistrationStatus(e.target.value)}
+                  <select
+                    value={registrationStatus}
+                    onChange={e => setRegistrationStatus(e.target.value)}
                     className="filter-select"
                   >
                     <option value="All">All</option>
@@ -295,9 +347,9 @@ const AllEvents = () => {
                 {/* Date Range Filter */}
                 <div className="filter-group">
                   <label className="filter-label">Date Range</label>
-                  <select 
-                    value={dateRange} 
-                    onChange={(e) => setDateRange(e.target.value)}
+                  <select
+                    value={dateRange}
+                    onChange={e => setDateRange(e.target.value)}
                     className="filter-select"
                   >
                     <option value="All">All Events</option>
@@ -312,12 +364,16 @@ const AllEvents = () => {
               {/* Clear All Filters Button */}
               {activeFiltersCount > 0 && (
                 <div className="filter-actions">
-                  <button 
-                    className="clear-filters-btn"
-                    onClick={clearAllFilters}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round"/>
+                  <button className="clear-filters-btn" onClick={clearAllFilters}>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
                     </svg>
                     Clear All Filters
                   </button>
@@ -343,19 +399,25 @@ const AllEvents = () => {
               )}
               {modeFilter !== 'All' && (
                 <div className="filter-chip">
-                  <span>{modeFilter === 'Online' ? '🌐' : '📍'} {modeFilter}</span>
+                  <span>
+                    {modeFilter === 'Online' ? '🌐' : '📍'} {modeFilter}
+                  </span>
                   <button onClick={() => setModeFilter('All')}>×</button>
                 </div>
               )}
               {participationFilter !== 'All' && (
                 <div className="filter-chip">
-                  <span>{participationFilter === 'Individual' ? '👤' : '👥'} {participationFilter}</span>
+                  <span>
+                    {participationFilter === 'Individual' ? '👤' : '👥'} {participationFilter}
+                  </span>
                   <button onClick={() => setParticipationFilter('All')}>×</button>
                 </div>
               )}
               {registrationStatus !== 'All' && (
                 <div className="filter-chip">
-                  <span>{registrationStatus === 'Open' ? '🟢' : '🔴'} Registration {registrationStatus}</span>
+                  <span>
+                    {registrationStatus === 'Open' ? '🟢' : '🔴'} Registration {registrationStatus}
+                  </span>
                   <button onClick={() => setRegistrationStatus('All')}>×</button>
                 </div>
               )}
@@ -372,7 +434,8 @@ const AllEvents = () => {
         {/* Events Count */}
         {!loading && (
           <div className="events-count">
-            <span className="count-number">{sortedEvents.length}</span> {sortedEvents.length === 1 ? 'event' : 'events'} found
+            <span className="count-number">{sortedEvents.length}</span>{' '}
+            {sortedEvents.length === 1 ? 'event' : 'events'} found
           </div>
         )}
 
@@ -385,22 +448,26 @@ const AllEvents = () => {
         ) : sortedEvents.length === 0 ? (
           <div className="empty-state">
             <div className="empty-state-icon">
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <rect x="3" y="4" width="18" height="18" rx="2" strokeLinecap="round"/>
-                <path d="M16 2v4M8 2v4M3 10h18" strokeLinecap="round"/>
+              <svg
+                width="64"
+                height="64"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
+                <rect x="3" y="4" width="18" height="18" rx="2" strokeLinecap="round" />
+                <path d="M16 2v4M8 2v4M3 10h18" strokeLinecap="round" />
               </svg>
             </div>
             <h3>No events found</h3>
             <p>
               {activeFiltersCount > 0
-                ? 'Try adjusting your search or filters' 
+                ? 'Try adjusting your search or filters'
                 : 'Be the first to create an event!'}
             </p>
             {activeFiltersCount > 0 && (
-              <button 
-                className="btn-primary"
-                onClick={clearAllFilters}
-              >
+              <button className="btn-primary" onClick={clearAllFilters}>
                 Clear Filters
               </button>
             )}
