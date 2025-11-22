@@ -1,7 +1,8 @@
-from flask_sqlalchemy import SQLAlchemy
+from utils.database_manager import DatabaseManager
 from datetime import datetime
 
-db = SQLAlchemy()
+# Get database instance from DatabaseManager singleton
+db = DatabaseManager.get_db()
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
