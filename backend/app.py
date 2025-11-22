@@ -1,9 +1,13 @@
 from flask import Flask
 from flask_cors import CORS
+
 from config import Config
+from routes.auth_routes import auth_routes
+from routes.event_routes import event_routes
 from utils.database_manager import DatabaseManager
+from utils.email_service import EmailService
 from utils.image_upload_manager import ImageUploadManager
-import os
+from utils.participant_notifier import EmailParticipantNotifier, EventNotificationManager
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -34,12 +38,10 @@ image_manager = ImageUploadManager.get_instance()
 image_manager.set_api_key(config.IMGBB_API_KEY)
 
 # Initialize Email Service (Singleton)
-from utils.email_service import EmailService
 email_service = EmailService.get_instance()
 email_service.init_app(app)
 
 # Initialize Participant Notification Manager (Observer Pattern)
-from utils.participant_notifier import EventNotificationManager, EmailParticipantNotifier
 notification_manager = EventNotificationManager.get_instance()
 notification_manager.attach_observer(EmailParticipantNotifier())
 
@@ -47,27 +49,25 @@ notification_manager.attach_observer(EmailParticipantNotifier())
 app.url_map.strict_slashes = False
 
 # Enable CORS
-CORS(app, 
-     resources={r"/*": {"origins": "*"}},
-     allow_headers=["Content-Type", "Authorization"],
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-     expose_headers=["Content-Type", "Authorization"]
+CORS(
+    app,
+    resources={r'/*': {'origins': '*'}},
+    allow_headers=['Content-Type', 'Authorization'],
+    methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    expose_headers=['Content-Type', 'Authorization'],
 )
 
 # Initialize Database using Singleton pattern
 db = DatabaseManager.init_app(app)
 
 # Register Blueprints
-from routes.auth_routes import auth_routes
-from routes.event_routes import event_routes
 app.register_blueprint(auth_routes, url_prefix='/api/auth')
 app.register_blueprint(event_routes, url_prefix='/api/events')
 
 # Import models after db initialization
-from models import User, Event, Registration, RegistrationField, RegistrationFieldResponse
 
 # Create tables using DatabaseManager singleton
 DatabaseManager.create_all(app)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)

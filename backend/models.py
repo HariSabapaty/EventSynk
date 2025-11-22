@@ -1,8 +1,10 @@
-from utils.database_manager import DatabaseManager
 from datetime import datetime
+
+from utils.database_manager import DatabaseManager
 
 # Get database instance from DatabaseManager singleton
 db = DatabaseManager.get_db()
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -13,8 +15,9 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    events = db.relationship('Event', backref='organiser', lazy=True, cascade="all, delete-orphan")
-    registrations = db.relationship('Registration', backref='user', lazy=True, cascade="all, delete-orphan")
+    events = db.relationship('Event', backref='organiser', lazy=True, cascade='all, delete-orphan')
+    registrations = db.relationship('Registration', backref='user', lazy=True, cascade='all, delete-orphan')
+
 
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -34,8 +37,9 @@ class Event(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    registrations = db.relationship('Registration', backref='event', lazy=True, cascade="all, delete-orphan")
-    registration_fields = db.relationship('RegistrationField', backref='event', lazy=True, cascade="all, delete-orphan")
+    registrations = db.relationship('Registration', backref='event', lazy=True, cascade='all, delete-orphan')
+    registration_fields = db.relationship('RegistrationField', backref='event', lazy=True, cascade='all, delete-orphan')
+
 
 class Registration(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -43,7 +47,10 @@ class Registration(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
-    field_responses = db.relationship('RegistrationFieldResponse', backref='registration', lazy=True, cascade="all, delete-orphan")
+    field_responses = db.relationship(
+        'RegistrationFieldResponse', backref='registration', lazy=True, cascade='all, delete-orphan'
+    )
+
 
 class RegistrationField(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -52,7 +59,8 @@ class RegistrationField(db.Model):
     field_type = db.Column(db.String(50), nullable=False)
     is_required = db.Column(db.Boolean, default=False)
 
-    field_responses = db.relationship('RegistrationFieldResponse', backref='field', lazy=True, cascade="all, delete-orphan")
+    field_responses = db.relationship('RegistrationFieldResponse', backref='field', lazy=True, cascade='all, delete-orphan')
+
 
 class RegistrationFieldResponse(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -1,27 +1,29 @@
+from datetime import datetime, timedelta
+from functools import wraps
+
 import bcrypt
 import jwt
-from datetime import datetime, timedelta
-from flask import request, jsonify
-from functools import wraps
+from flask import jsonify, request
+
 from config import Config
+
 
 # Hash a password using bcrypt
 def hash_password(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
+
 # Check a password against a hash
 def check_password(password, hashed):
     return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
 
+
 # Generate JWT token
 def generate_token(user_id, email):
-    payload = {
-        'user_id': user_id,
-        'email': email,
-        'exp': datetime.utcnow() + timedelta(hours=4)
-    }
+    payload = {'user_id': user_id, 'email': email, 'exp': datetime.utcnow() + timedelta(hours=4)}
     token = jwt.encode(payload, Config.SECRET_KEY, algorithm='HS256')
     return token
+
 
 # Verify JWT token
 def verify_token(token):
@@ -32,6 +34,7 @@ def verify_token(token):
         return None
     except jwt.InvalidTokenError:
         return None
+
 
 # Decorator to require token authentication
 def token_required(f):
@@ -46,4 +49,5 @@ def token_required(f):
             return jsonify({'message': 'Token is invalid or expired!'}), 401
         current_user_id = payload['user_id']
         return f(current_user_id, *args, **kwargs)
+
     return decorated
